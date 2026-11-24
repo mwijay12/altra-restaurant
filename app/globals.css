@@ -1,0 +1,159 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  --background: #fff8f0; /* warm cream   */
+  --foreground: #1a1a1a; /* deep charcoal */
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --muted: #f5ece2;
+  --muted-foreground: #6f6459;
+  --accent: #ff5c00; /* vibrant orange */
+  --accent-foreground: #fff8f0;
+  --border: #ecdfd0;
+  --input: #ecdfd0;
+  --ring: #ff5c00;
+  --pink: #ffd6c0;
+  --cream: #fff8f0;
+  --charcoal: #1a1a1a;
+  --orange: #ff5c00;
+}
+
+.dark {
+  --background: #161210;
+  --foreground: #f7f1e8;
+  --card: #201a16;
+  --card-foreground: #f7f1e8;
+  --muted: #2a231d;
+  --muted-foreground: #b3a698;
+  --accent: #ff6a1a;
+  --accent-foreground: #1a1208;
+  --border: #2e2721;
+  --input: #2e2721;
+  --ring: #ff6a1a;
+  --pink: #ffd6c0;
+  --cream: #fff8f0;
+  --charcoal: #1a1a1a;
+  --orange: #ff6a1a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-cream: var(--cream);
+  --color-charcoal: var(--charcoal);
+  --color-orange: var(--orange);
+  --color-pink: var(--pink);
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-display: "Playfair Display Variable", "Playfair Display", Georgia,
+    serif;
+
+  --animate-float: float 3.2s ease-in-out infinite;
+  --animate-float-slow: float 5.5s ease-in-out infinite;
+  --animate-gradient: gradient-shift 8s ease infinite;
+  --animate-spin-slow: spin 14s linear infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--accent) 60%, transparent)
+      transparent;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-accent text-accent-foreground;
+  }
+}
+
+/* ── Custom utilities ──────────────────────────────────────── */
+
+/* Outlined display text (marquee etc.) */
+@utility text-outline {
+  -webkit-text-stroke: 1.5px currentColor;
+  color: transparent;
+}
+
+/* Hide scrollbars while keeping scroll behaviour */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Glassmorphism card surface */
+@utility glass {
+  @apply border border-black/5 bg-white/60 backdrop-blur-md;
+}
+
+.dark .glass {
+  @apply border-white/10 bg-white/5;
+}
+
+/* Swiper pagination (testimonials) */
+.testimonials-swiper .swiper-pagination-bullet {
+  background: rgba(255, 248, 240, 0.4);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+.testimonials-swiper .swiper-pagination-bullet-active {
+  background: var(--orange);
+  width: 22px;
+  border-radius: 999px;
+}
+
+/* Respect reduced motion globally for CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
