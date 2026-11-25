@@ -8,15 +8,16 @@
 |---|---|
 | Framework | Next.js 15 (App Router) + TypeScript |
 | Styling | Tailwind CSS v4 (CSS-first `@theme`) + shadcn-style UI primitives |
-| Animation | GSAP 3 (ScrollTrigger + SplitText), Framer Motion, tw-animate-css |
+| Animation | GSAP 3 (ScrollTrigger + SplitText + DrawSVG + MotionPath), Framer Motion, tw-animate-css |
 | Smooth scroll | Lenis (wired into the GSAP ticker) |
-| 3D | Three.js / React Three Fiber — lazy-loaded particle field |
+| Scroll cinema | Pinned scroll-scrubbed video section (GSAP animates `video.currentTime`) |
+| SVG motion | Self-drawing curves, section dividers and food icons (DrawSVG + MotionPath) |
 | Carousel | Swiper (fade + autoplay) |
 | Fonts | Playfair Display Variable + Inter Variable via Fontsource (no external font CDN) |
 
 ## Pages
 
-- **/** — FloatingFoodHero + particle field, crossing marquee strips, bento features (tilt glass cards), pinned horizontal-scroll dishes with image parallax, testimonial carousel, sticky CTA
+- **/** — FloatingFoodHero + video wash, crossing marquee strips, bento features with self-drawing SVG icons + scroll-drawn wave, pinned horizontal dish scroller, scroll-scrubbed "Watch us cook" video section, testimonial carousel, sticky CTA
 - **/menu** — filterable animated dish grid (layout animations, TZS pricing)
 - **/about** — parallax brand story, count-up stats, values, CTA
 
@@ -25,7 +26,9 @@
 - **Orange curtain page transitions** — two Framer Motion panels wipe over every internal navigation (App-Router-native take on the Barba.js pattern — Barba targets classic MPAs, so we reproduce the wipe with `router.push()` + animation controls).
 - **GSAP SplitText** letter-by-letter hero reveal, timed to `document.fonts.ready`.
 - **Magnetic buttons**, **3D tilt glass cards**, **image parallax** — all GSAP `quickTo`.
-- **`prefers-reduced-motion`** respected everywhere; particle field disabled on mobile + reduced motion; Lenis skipped entirely for reduced-motion users.
+- **DrawSVG motion** — curvy wave/swoop/infinity lines draw themselves on scroll (with a MotionPath dot riding along), section dividers self-draw, and the feature icons (clock/leaf/store) sketch themselves in stroke-by-stroke.
+- **Scroll-scrubbed video** — the "Watch us cook" section pins to the viewport; scrolling plays the clip frame by frame and rewinds on scroll-up. Licensed clips are hotlinked from Mixkit's CDN (Stock Video Free License, commercial use).
+- **`prefers-reduced-motion`** respected everywhere; Lenis skipped entirely for reduced-motion users; scrub video freezes on its poster frame.
 - **Dark mode** via class strategy with a no-flash inline boot script.
 - Prices in **TZS** (`Intl.NumberFormat("en-TZ")`), Tanzanian neighbourhoods, local flavour throughout.
 
@@ -43,7 +46,7 @@ components/
   demo/                 hero-section-7-demo (content wiring for the hero)
   sections/             navbar, hero, marquee, features, popular-dishes,
                         testimonials, sticky-cta, footer, menu-grid, about-content
-  three/                particle-field (R3F canvas)
+  three/                (removed — particle field dropped for a cleaner hero)
   layout/               smooth-scroll (Lenis), transition-provider, transition-link
 lib/                    gsap (registered plugins), lenis singleton, data, utils
 ```

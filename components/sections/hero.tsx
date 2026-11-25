@@ -1,37 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
+import { useRef } from "react";
 import FloatingFoodHeroDemo from "@/components/demo/hero-section-7-demo";
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 
-const ParticleField = dynamic(
-  () => import("@/components/three/particle-field"),
-  { ssr: false },
-);
-
 /**
- * Home hero: Three.js particle backdrop + page-load GSAP timeline.
- * Load order: eyebrow → floating images pop → SplitText letter reveal
+ * Home hero: page-load GSAP timeline over the FloatingFoodHero.
+ * Load order: eyebrow → floating cutouts pop → SplitText letter reveal
  * on the heading → description → CTAs → scroll cue.
  */
 export function Hero() {
   const scope = useRef<HTMLDivElement>(null);
-  const [enable3d, setEnable3d] = useState(false);
-
-  // Heavy 3D: desktop only + respect prefers-reduced-motion
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setEnable3d(mq.matches && !reduced.matches);
-    update();
-    mq.addEventListener("change", update);
-    reduced.addEventListener("change", update);
-    return () => {
-      mq.removeEventListener("change", update);
-      reduced.removeEventListener("change", update);
-    };
-  }, []);
 
   useGSAP(
     () => {
@@ -95,7 +74,6 @@ export function Hero() {
 
   return (
     <div ref={scope} className="relative">
-      {enable3d ? <ParticleField /> : null}
       <FloatingFoodHeroDemo />
     </div>
   );

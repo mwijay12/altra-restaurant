@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, type ComponentPropsWithoutRef, type ReactNode } from "react";
-import { Leaf, Store, Timer } from "lucide-react";
+import { useRef, type ComponentPropsWithoutRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { AnimatedCurve } from "@/components/ui/animated-curve";
+import { AnimatedSVGIcon } from "@/components/ui/animated-svg-icons";
 
 /** Glass card with a GSAP quickTo 3D tilt that follows the cursor. */
 function TiltCard({
@@ -50,7 +51,7 @@ function TiltCard({
 }
 
 const featureIconClass =
-  "grid size-11 place-items-center rounded-2xl bg-accent text-accent-foreground shadow-lg shadow-accent/25";
+  "grid size-14 place-items-center rounded-2xl bg-accent text-accent-foreground shadow-lg shadow-accent/25";
 
 export function Features() {
   const scope = useRef<HTMLDivElement>(null);
@@ -92,6 +93,11 @@ export function Features() {
           One promise: restaurant-quality food while it&rsquo;s still too hot to
           hurry. Everything we build serves that promise.
         </p>
+        <AnimatedCurve
+          variant="wave"
+          showDot
+          className="mx-auto mt-8 max-w-sm text-accent"
+        />
       </div>
 
       <div data-bento-grid className="mt-14 grid gap-4 md:grid-cols-2">
@@ -100,7 +106,7 @@ export function Features() {
           className="glass relative flex min-h-[300px] flex-col justify-between overflow-hidden rounded-3xl p-8 md:col-span-2"
         >
           <span className={featureIconClass}>
-            <Timer className="size-5" />
+            <AnimatedSVGIcon icon="clock" size={26} />
           </span>
           <div className="relative">
             <h3 className="font-display text-3xl font-semibold">30-minute delivery</h3>
@@ -122,7 +128,7 @@ export function Features() {
           className="glass flex min-h-[240px] flex-col justify-between gap-6 overflow-hidden rounded-3xl p-8"
         >
           <span className={featureIconClass}>
-            <Leaf className="size-5" />
+            <AnimatedSVGIcon icon="leaf" size={26} />
           </span>
           <div>
             <h3 className="font-display text-2xl font-semibold">Fresh ingredients</h3>
@@ -138,7 +144,7 @@ export function Features() {
           className="glass flex min-h-[240px] flex-col justify-between gap-6 overflow-hidden rounded-3xl p-8"
         >
           <span className={featureIconClass}>
-            <Store className="size-5" />
+            <AnimatedSVGIcon icon="store" size={26} />
           </span>
           <div>
             <h3 className="font-display text-2xl font-semibold">1,000+ restaurants</h3>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight, HeartHandshake, Leaf, Zap } from "lucide-react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { Badge } from "@/components/ui/badge";
+import { AnimatedCurve } from "@/components/ui/animated-curve";
 import { Button } from "@/components/ui/button";
 import { Magnetic } from "@/components/ui/magnetic";
 import { TransitionLink } from "@/components/layout/transition-link";
@@ -155,6 +156,11 @@ export function AboutSections() {
             Altra started with two friends, one scooter and a stubborn belief:
             nobody in this city should eat cold fries ever again.
           </p>
+          <AnimatedCurve
+            variant="swoop"
+            showDot
+            className="mt-10 w-full max-w-xl text-accent"
+          />
         </div>
       </section>
 
