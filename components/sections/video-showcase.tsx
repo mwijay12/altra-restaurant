@@ -4,30 +4,24 @@ import { ScrollVideoScrub } from "@/components/ui/scroll-video-scrub";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * Scroll-scrubbed kitchen cinema.
- * Clip: "Chef preparing a dessert on a stove" — Mixkit Stock Video Free
- * License (commercial use), mixkit.co/free-stock-video/
- * chef-preparing-a-dessert-on-a-stove-43026
+ * Scroll-scrubbed kitchen cinema — fully self-hosted.
+ * The clip was rendered from Altra's own food cutouts (Ken Burns shots,
+ * 24fps, keyframe on every frame for frame-accurate scrubbing) and lives
+ * in /public/videos/kitchen-scrub.mp4 — no third-party CDN can break it.
  */
-const SCRUB_VIDEO =
-  "https://assets.mixkit.co/videos/preview/mixkit-chef-preparing-a-dessert-on-a-stove-43026-large.mp4";
-const SCRUB_POSTER =
-  "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=1600&q=80&auto=format&fit=crop";
-
 export function VideoShowcase() {
   return (
     <ScrollVideoScrub
-      src={SCRUB_VIDEO}
-      poster={SCRUB_POSTER}
+      src="/videos/kitchen-scrub.mp4"
+      poster="/videos/kitchen-scrub-poster.jpg"
       scrollLength="+=350%"
+      tone="light"
     >
-      <Badge className="border-accent/40 bg-accent/15 text-orange backdrop-blur-sm">
-        From our kitchens
-      </Badge>
-      <h2 className="mt-6 font-display text-5xl font-semibold text-cream sm:text-6xl md:text-7xl">
-        Watch us cook<span className="text-orange">.</span>
+      <Badge>From our kitchens</Badge>
+      <h2 className="mt-6 font-display text-5xl font-semibold text-charcoal sm:text-6xl md:text-7xl">
+        Watch us cook<span className="text-accent">.</span>
       </h2>
-      <p className="mt-4 max-w-md text-cream/80">
+      <p className="mt-4 max-w-md text-charcoal/70">
         Keep scrolling — every frame is made fresh, just like your order.
       </p>
     </ScrollVideoScrub>

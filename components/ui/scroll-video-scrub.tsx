@@ -11,6 +11,12 @@ interface ScrollVideoScrubProps {
   scrollLength?: string;
   className?: string;
   children?: ReactNode;
+  /**
+   * "dark"  → charcoal veil + cream text (for dark/moody footage)
+   * "light" → warm cream veil + charcoal text (for bright footage,
+   *           e.g. the self-hosted kitchen-scrub clip)
+   */
+  tone?: "dark" | "light";
 }
 
 /**
@@ -30,6 +36,7 @@ export function ScrollVideoScrub({
   scrollLength = "+=350%",
   className,
   children,
+  tone = "dark",
 }: ScrollVideoScrubProps) {
   const containerRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -124,11 +131,19 @@ export function ScrollVideoScrub({
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-charcoal/55 via-charcoal/25 to-charcoal/65"
+        className={cn(
+          "absolute inset-0",
+          tone === "dark"
+            ? "bg-gradient-to-b from-charcoal/55 via-charcoal/25 to-charcoal/65"
+            : "bg-gradient-to-b from-background/55 via-transparent to-background/60",
+        )}
       />
       <div
         data-scrub-text
-        className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-cream"
+        className={cn(
+          "absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center",
+          tone === "dark" ? "text-cream" : "text-charcoal",
+        )}
       >
         {children}
       </div>

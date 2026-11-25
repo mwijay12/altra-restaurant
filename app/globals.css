@@ -115,10 +115,13 @@
 
 /* ── Custom utilities ──────────────────────────────────────── */
 
-/* Outlined display text (marquee etc.) */
+/* Outlined display text (marquee etc.).
+   NOTE: -webkit-text-fill-color keeps the fill transparent while the
+   stroke resolves from the inherited text color — using `color:
+   transparent` would make currentColor (and thus the stroke) vanish. */
 @utility text-outline {
   -webkit-text-stroke: 1.5px currentColor;
-  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Hide scrollbars while keeping scroll behaviour */

@@ -7,9 +7,8 @@ import {
 
 /**
  * Hero assets — self-hosted transparent food cutouts (/public/images/food)
- * plus a licensed background video (Mixkit Stock Video Free License —
- * "Burger being prepared with french fries", mixkit.co/free-stock-video/
- * burger-being-prepared-with-french-fries-3533).
+ * plus a self-hosted background video wash (/public/videos/hero-wash.mp4,
+ * a seamless ping-pong Ken Burns loop rendered from the same cutouts).
  */
 const heroImages: FloatingImageProps[] = [
   {
@@ -62,10 +61,8 @@ const heroImages: FloatingImageProps[] = [
   },
 ];
 
-const VIDEO_SRC =
-  "https://assets.mixkit.co/videos/preview/mixkit-burger-being-prepared-with-french-fries-3533-large.mp4";
-const VIDEO_POSTER =
-  "https://images.unsplash.com/photo-1550547660-d9450f859349?w=1600&q=80&auto=format&fit=crop";
+const VIDEO_SRC = "/videos/hero-wash.mp4";
+const VIDEO_POSTER = "/videos/kitchen-scrub-poster.jpg";
 
 export default function FloatingFoodHeroDemo() {
   return (
