@@ -76,8 +76,11 @@ function DishCard({ dish, className }: { dish: Dish; className?: string }) {
           </p>
         </div>
         <button
-          aria-label={`Add ${dish.name} to cart`}
-          className="mt-1 grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/25 transition-transform duration-300 hover:scale-110"
+          type="button"
+          disabled
+          title="Online ordering is not available yet"
+          aria-label={`Ordering for ${dish.name} is not available yet`}
+          className="mt-1 grid size-11 shrink-0 cursor-not-allowed place-items-center rounded-full bg-muted text-muted-foreground"
         >
           <Plus className="size-5" />
         </button>

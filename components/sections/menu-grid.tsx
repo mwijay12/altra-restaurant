@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Magnetic } from "@/components/ui/magnetic";
+import { TransitionLink } from "@/components/layout/transition-link";
 
 type Category = (typeof categories)[number];
 
@@ -44,8 +45,10 @@ export function MenuGrid() {
           Pick your craving<span className="text-accent">.</span>
         </h1>
         <p className="mt-4 text-muted-foreground">
-          {filtered.length} {filtered.length === 1 ? "dish" : "dishes"} ready to
-          leave a kitchen near you in 30 minutes or less.
+          {filtered.length} {filtered.length === 1 ? "dish" : "dishes"} in our menu preview. Online ordering is not available yet.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Menu items, prices and availability are illustrative. <TransitionLink href="/delivery" className="font-semibold text-accent underline underline-offset-4">Delivery &amp; refund details</TransitionLink>
         </p>
       </div>
 
@@ -121,8 +124,11 @@ export function MenuGrid() {
                   </p>
                 </div>
                 <button
-                  aria-label={`Add ${dish.name} to cart`}
-                  className="mt-1 grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/25 transition-transform duration-300 hover:scale-110"
+                  type="button"
+                  disabled
+                  title="Online ordering is not available yet"
+                  aria-label={`Ordering for ${dish.name} is not available yet`}
+                  className="mt-1 grid size-11 shrink-0 cursor-not-allowed place-items-center rounded-full bg-muted text-muted-foreground"
                 >
                   <Plus className="size-5" />
                 </button>
@@ -135,16 +141,17 @@ export function MenuGrid() {
       {/* App banner */}
       <div className="mt-24 overflow-hidden rounded-[2.5rem] bg-accent px-8 py-14 text-center text-accent-foreground">
         <h2 className="font-display text-3xl font-semibold sm:text-5xl">
-          1,000+ more on the app.
+          More good things are on the way.
         </h2>
         <p className="mx-auto mt-3 max-w-md text-accent-foreground/85">
-          Street legends, hidden gems, five-star kitchens — the whole city, one
-          tap away.
+          This menu is a preview. Online ordering and delivery details will be shared when the service is ready.
         </p>
         <Magnetic strength={0.2} className="mt-8">
-          <Button variant="charcoal" size="lg">
-            Get the Altra app
-          </Button>
+          <TransitionLink href="/help">
+            <Button variant="charcoal" size="lg">
+              Visit Help &amp; FAQs
+            </Button>
+          </TransitionLink>
         </Magnetic>
       </div>
     </section>
