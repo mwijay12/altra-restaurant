@@ -1,8 +1,8 @@
 "use client";
 
-import { useId, useState, type CSSProperties, type ReactNode, useEffect, useRef, type MouseEvent } from "react";
+import { useId, useState, type CSSProperties, type ReactNode, useEffect, useRef, type MouseEvent, type FormEvent } from "react";
 
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Box, CircleDollarSign, Clock3, Download, Ellipsis, Eye, FileText, Filter, Flame, ListChecks, Search, ShieldCheck, ShoppingBag, TriangleAlert, Users, Zap, ArrowDownToLine, BarChart3, Bell, ChevronRight, Command, LayoutDashboard, Moon, Sun, TrendingUp, X, ChefHat } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Box, CircleDollarSign, Clock3, Download, Ellipsis, Eye, FileText, Filter, Flame, ListChecks, Search, ShieldCheck, ShoppingBag, TriangleAlert, Users, Zap, ArrowDownToLine, BarChart3, Bell, ChevronRight, Command, LayoutDashboard, Moon, Sun, TrendingUp, X, ChefHat, LogOut, Plus, Pencil, Save, Trash2, Utensils } from "lucide-react";
 
 import { gsap, useGSAP } from "@/lib/gsap";
 
@@ -11,7 +11,10 @@ import autoTable from "jspdf-autotable";
 
 import "@fontsource-variable/manrope";
 
-import { dishes } from "@/lib/data";
+import { categories, dishes, type Dish, type DishCategory } from "@/lib/data";
+import { canAccessView, roleLabels, type AdminView, type DemoRole } from "@/lib/auth";
+import { readMenuDishes, saveMenuDishes } from "@/lib/menu-store";
+import { AdminMenuManager } from "@/components/ui/admin-menu-manager";
 
 /** Altra Admin — a spatial analytics workspace for the restaurant.
  *
@@ -30,6 +33,9 @@ export interface AltraAdminProps {
   workspaceName?: string;
   panelFrost?: number;
   initialTheme?: "light" | "dark";
+  role?: DemoRole;
+  userEmail?: string;
+  onLogout?: () => void;
 }
 
 const restaurantPhoto = "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80&auto=format&fit=crop";
@@ -199,7 +205,13 @@ const dashboardStyles = `
 }
 @keyframes gd-prompt-in { from { clip-path: inset(0 100% 0 0); } }
 .gd-ask-search { margin-inline-start: auto; width: 15px; height: 15px; color: var(--gd-muted); }
-.gd-top-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.gd-top-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.gd-user-role { display: flex; align-items: center; gap: 6px; max-inline-size: 170px; padding: 4px 9px; border: 1px solid var(--gd-line); border-radius: 999px; background: var(--gd-inner); }
+.gd-user-role > svg { width: 15px; height: 15px; color: var(--gd-teal); }
+.gd-user-role span { min-inline-size: 0; }
+.gd-user-role strong, .gd-user-role small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gd-user-role strong { font-size: 10px; font-weight: 850; }
+.gd-user-role small { max-inline-size: 115px; color: var(--gd-muted); font-size: 8px; }
 .gd-icon-button {
   position: relative; min-inline-size: 44px; min-block-size: 44px; display: inline-grid; place-items: center;
   border-radius: 999px; border: 1px solid var(--gd-line); padding: 0; background: var(--gd-inner);
@@ -471,6 +483,34 @@ const dashboardStyles = `
 .gd-switch i { position: absolute; top: 2px; left: 2px; inline-size: 18px; block-size: 18px; border-radius: 50%; background: var(--gd-pick); transition: transform .2s ease; }
 .gd-switch[aria-checked="true"] { background: var(--gd-coral); border-color: transparent; }
 .gd-switch[aria-checked="true"] i { transform: translateX(18px); background: #fff; }
+.gd-menu-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.gd-menu-toolbar p { color: var(--gd-muted); font-size: 11px; }
+.gd-menu-list { display: grid; gap: 7px; }
+.gd-menu-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) 108px 95px auto; align-items: center; gap: 10px; min-inline-size: 0; padding: 9px; border: 1px solid var(--gd-line); border-radius: 13px; background: var(--gd-inner); }
+.gd-menu-row img { width: 52px; height: 42px; object-fit: cover; border-radius: 8px; background: var(--gd-surface); }
+.gd-menu-info { min-inline-size: 0; }
+.gd-menu-info strong, .gd-menu-info small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gd-menu-info strong { font-size: 11px; font-weight: 850; }
+.gd-menu-info small { margin-top: 3px; color: var(--gd-muted); font-size: 9px; }
+.gd-menu-price { font-size: 10px; font-weight: 850; }
+.gd-menu-state { display: flex; flex-wrap: wrap; gap: 4px; }
+.gd-menu-state span { display: inline-flex; align-items: center; gap: 3px; border: 1px solid var(--gd-line); border-radius: 999px; padding: 3px 6px; color: var(--gd-muted); font-size: 8px; font-weight: 800; }
+.gd-menu-state svg { width: 9px; height: 9px; }
+.gd-menu-form-title { margin: 2px 0 0; color: var(--gd-ink); font-size: 15px; font-weight: 850; }
+.gd-menu-form label small { color: var(--gd-muted); font-size: 9px; font-weight: 600; }
+.gd-menu-error { grid-column: 1 / -1; color: #b42318; font-size: 11px; font-weight: 750; }
+.gd-menu-row-actions { display: flex; gap: 5px; }
+.gd-menu-row-actions .gd-icon-button { min-inline-size: 36px; min-block-size: 36px; }
+.gd-menu-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.gd-menu-form label { display: grid; gap: 5px; color: var(--gd-muted); font-size: 10px; font-weight: 800; }
+.gd-menu-form label.gd-menu-full { grid-column: 1 / -1; }
+.gd-menu-form input, .gd-menu-form select, .gd-menu-form textarea { min-inline-size: 0; border: 1px solid var(--gd-line); border-radius: 10px; background: var(--gd-inner); padding: 10px; color: var(--gd-ink); font-size: 12px; }
+.gd-menu-form textarea { min-block-size: 68px; resize: vertical; }
+.gd-menu-toggles { display: flex; flex-wrap: wrap; gap: 12px; grid-column: 1 / -1; }
+.gd-menu-toggles label { display: flex; align-items: center; gap: 7px; }
+.gd-menu-toggles input { accent-color: var(--gd-pick); }
+.gd-menu-form-actions { display: flex; justify-content: flex-end; gap: 8px; grid-column: 1 / -1; padding-top: 3px; }
+.gd-menu-empty { padding: 24px; border: 1px dashed var(--gd-line); border-radius: 14px; color: var(--gd-muted); text-align: center; }
 
 .gd-dock {
   position: absolute; z-index: 3;
@@ -550,7 +590,7 @@ const dashboardStyles = `
 }
 @media (max-width: 760px) {
   .gd-surround { padding-top: 10px; padding-bottom: calc(76px + env(safe-area-inset-bottom)); inline-size: calc(100% - 20px); }
-  .gd-top { grid-template-columns: minmax(0, 1fr) auto; padding: 6px 8px; gap: 5px 10px; border-radius: 20px; }
+  .gd-top { grid-template-columns: minmax(0, 1fr) auto; padding: 5px; gap: 4px 6px; border-radius: 20px; }
   .gd-brand { padding-inline-start: 2px; gap: 8px; }
   .gd-brand small { display: none; }
   .gd-logo { inline-size: 31px; block-size: 31px; }
@@ -559,7 +599,11 @@ const dashboardStyles = `
   .gd-orb { inline-size: 21px; block-size: 21px; }
   .gd-prompt { font-size: 11px; }
   .gd-top-actions { grid-area: 1 / 2; gap: 5px; }
-  .gd-top-actions .gd-icon-button { width: 39px; min-inline-size: 39px; min-block-size: 39px; }
+  .gd-top-actions .gd-icon-button { width: 34px; min-inline-size: 34px; min-block-size: 34px; }
+  .gd-user-role { max-inline-size: 47px; padding: 4px 5px; justify-content: center; }
+  .gd-user-role > svg { display: none; }
+  .gd-user-role strong { font-size: 7.5px; }
+  .gd-user-role small { display: none; }
   .gd-stage { border-radius: 22px; }
   .gd-stage-scroll { block-size: auto; padding: 13px 11px 15px; overflow: visible; }
   .gd-view-head { align-items: flex-start; flex-direction: column; gap: 9px; margin-bottom: 13px; }
@@ -582,6 +626,16 @@ const dashboardStyles = `
   .gd-streams { padding: 7px 1px; }
   .gd-streams strong { font-size: 10px; }
   .gd-swatch { inline-size: 44px; block-size: 32px; font-size: 10px; }
+  .gd-menu-row { grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: "image info actions" "image price actions" "image state actions"; gap: 3px 8px; }
+  .gd-menu-image { grid-area: image; width: 44px !important; height: 44px !important; }
+  .gd-menu-info { grid-area: info; }
+  .gd-menu-price { grid-area: price; font-size: 9px; }
+  .gd-menu-state { grid-area: state; }
+  .gd-menu-row-actions { grid-area: actions; flex-direction: column; }
+  .gd-menu-toolbar { align-items: flex-start; flex-direction: column; }
+  .gd-menu-toolbar .gd-search { inline-size: 100%; }
+  .gd-menu-form { grid-template-columns: minmax(0, 1fr); }
+  .gd-menu-form label.gd-menu-full, .gd-menu-toggles, .gd-menu-form-actions { grid-column: 1; }
   .gd-dock-side { display: none; }
   .gd-dock-bottom { position: fixed; inset: auto 10px calc(8px + env(safe-area-inset-bottom)); translate: none; justify-content: space-between; padding: 3px; }
   .gd-dock-bottom a { flex: 1; flex-direction: column; gap: 2px; padding: 3px 4px; min-block-size: 46px; line-height: 1.2; font-size: 9px; }
@@ -896,7 +950,7 @@ function Panel({ title, subtitle, action, className = "", children }: {
   </section>;
 }
 
-type View = "command" | "trends" | "metrics" | "operations";
+type View = AdminView;
 
 type MetricProps = {
   title: string;
@@ -1169,6 +1223,7 @@ const views = [
   { id: "trends", label: "Trends", short: "Trends", icon: TrendingUp, description: "Compare operating costs and revenue over time.", prompt: "How is revenue trending this month?" },
   { id: "metrics", label: "Metrics", short: "Metrics", icon: BarChart3, description: "Track orders, traffic, and device performance.", prompt: "Show me traffic by device." },
   { id: "operations", label: "Kitchen Operations", short: "Operations", icon: ChefHat, description: "Manage dish approvals, prep schedules, and stock exceptions.", prompt: "Which dishes need attention?" },
+  { id: "menu", label: "Menu Management", short: "Menu", icon: Utensils, description: "Update dish details, prices, and what is featured.", prompt: "Edit the Altra menu." },
 ] as const;
 
 const routeOrder: View[] = views.map(view => view.id);
@@ -1195,38 +1250,79 @@ const PDF_CHARCOAL: [number, number, number] = [26, 26, 26];
 const PDF_MUTED: [number, number, number] = [110, 100, 90];
 
 function pdfHeader(doc: jsPDF, title: string, subtitle: string) {
-  // Altra brand bar
+  const pageWidth = doc.internal.pageSize.getWidth();
   doc.setFillColor(...PDF_ORANGE);
-  doc.rect(0, 0, 210, 6, "F");
+  doc.rect(0, 0, pageWidth, 5, "F");
+
+  // Draw a compact vector A-mark so every PDF carries a crisp Altra brand mark.
+  doc.setFillColor(...PDF_ORANGE);
+  doc.roundedRect(14, 12, 14, 14, 3, 3, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.text("A", 21, 21.8, { align: "center" });
+  doc.setTextColor(...PDF_CHARCOAL);
+  doc.setFontSize(16);
+  doc.text("ALTRA", 33, 19.5);
+  doc.setFontSize(7);
+  doc.setTextColor(...PDF_MUTED);
+  doc.setFont("helvetica", "bold");
+  doc.text("ADMIN · DAR ES SALAAM", 33, 25);
+  doc.setTextColor(...PDF_ORANGE);
+  doc.setFontSize(8);
+  doc.text("RESTAURANT OPERATIONS", pageWidth - 14, 18, { align: "right" });
+  doc.setDrawColor(235, 222, 210);
+  doc.setLineWidth(0.35);
+  doc.line(14, 33, pageWidth - 14, 33);
+
   doc.setTextColor(...PDF_CHARCOAL);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.text("ALTRA", 14, 22);
+  doc.setFontSize(19);
+  doc.text(title, 14, 45);
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
   doc.setTextColor(...PDF_MUTED);
-  doc.text("Admin · Dar es Salaam", 14, 27.5);
+  doc.text(subtitle, 14, 52);
+  doc.setFontSize(8);
+  doc.text(`Generated ${new Date().toLocaleString("en-GB")}`, 14, 59);
   doc.setTextColor(...PDF_CHARCOAL);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(15);
-  doc.text(title, 14, 40);
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(...PDF_MUTED);
-  doc.text(subtitle, 14, 46);
-  doc.text(`Generated ${new Date().toLocaleString("en-GB")}`, 14, 51);
-  doc.setTextColor(...PDF_CHARCOAL);
-  return 58;
+  return 65;
+}
+
+function pdfMetricCards(doc: jsPDF, cards: Array<{ label: string; value: string }>, y: number) {
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const left = 14;
+  const gap = 4;
+  const width = (pageWidth - left * 2 - gap * (cards.length - 1)) / cards.length;
+  cards.forEach((card, index) => {
+    const x = left + index * (width + gap);
+    doc.setFillColor(255, 248, 240);
+    doc.setDrawColor(239, 222, 207);
+    doc.roundedRect(x, y, width, 24, 2.5, 2.5, "FD");
+    doc.setTextColor(...PDF_MUTED);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.text(card.label.toUpperCase(), x + 4, y + 7);
+    doc.setTextColor(...PDF_CHARCOAL);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text(card.value, x + 4, y + 17, { maxWidth: width - 8 });
+  });
 }
 
 function pdfFooter(doc: jsPDF) {
   const pages = doc.getNumberOfPages();
-  doc.setFontSize(8);
-  doc.setTextColor(...PDF_MUTED);
+  const pageWidth = doc.internal.pageSize.getWidth();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
-    doc.text(`Altra Admin — page ${i} of ${pages}`, 14, 287);
-    doc.text("altra-restaurant.vercel.app/admin", 196, 287, { align: "right" });
+    doc.setDrawColor(...PDF_ORANGE);
+    doc.setLineWidth(0.7);
+    doc.line(14, 281, pageWidth - 14, 281);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...PDF_MUTED);
+    doc.text("ALTRA · Dar es Salaam", 14, 287);
+    doc.text(`Page ${i} of ${pages}`, pageWidth - 14, 287, { align: "right" });
   }
 }
 
@@ -1240,19 +1336,17 @@ function saveTrendsPdf(period: Period) {
   const net = totalRev - totalCost;
   const margin = totalRev ? ((net / totalRev) * 100).toFixed(1) : "0.0";
 
-  doc.setFontSize(10);
+  doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
-  doc.text("Summary", 14, y + 4);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  const summary = [
-    `Total revenue: ${tzs(totalRev)}`,
-    `Total operating costs: ${tzs(totalCost)}`,
-    `Net revenue: ${tzs(net)}`,
-    `Operating margin: ${margin}%`,
-  ];
-  summary.forEach((line, i) => doc.text(line, 14, y + 11 + i * 5.5));
-  y += 11 + summary.length * 5.5 + 6;
+  doc.setTextColor(...PDF_MUTED);
+  doc.text("PERFORMANCE SNAPSHOT", 14, y + 3);
+  pdfMetricCards(doc, [
+    { label: "Revenue", value: tzs(totalRev) },
+    { label: "Operating costs", value: tzs(totalCost) },
+    { label: "Net", value: tzs(net) },
+    { label: "Margin", value: `${margin}%` },
+  ], y + 7);
+  y += 38;
 
   autoTable(doc, {
     startY: y,
@@ -1264,7 +1358,8 @@ function saveTrendsPdf(period: Period) {
       tzs(stats.collected[i] - stats.costs[i]),
     ]),
     foot: [["Total", tzs(totalRev), tzs(totalCost), tzs(net)]],
-    styles: { fontSize: 9, cellPadding: 3 },
+    margin: { left: 14, right: 14 },
+    styles: { fontSize: 8.5, cellPadding: 3, textColor: PDF_CHARCOAL, lineColor: [237, 225, 214], lineWidth: 0.15 },
     headStyles: { fillColor: PDF_ORANGE, textColor: 255, fontStyle: "bold" },
     footStyles: { fillColor: [255, 214, 192], textColor: PDF_CHARCOAL, fontStyle: "bold" },
     alternateRowStyles: { fillColor: [255, 248, 240] },
@@ -1275,18 +1370,23 @@ function saveTrendsPdf(period: Period) {
 
 function saveOperationsPdf(work: WorkItem[]) {
   const doc = new jsPDF();
-  const y = pdfHeader(doc, "Kitchen Operations Report", `${work.length} active work items`);
+  const y = pdfHeader(doc, "Kitchen Operations Report", `${work.length} work items · Live kitchen queue`);
   const review = work.filter(item => item.status === "Needs review").length;
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Needs approval: ${review} · Stations: ${new Set(work.map(i => i.tool)).size}`, 14, y + 4);
+  const stations = new Set(work.map(item => item.tool)).size;
+  const running = work.filter(item => item.status === "Running").length;
+  pdfMetricCards(doc, [
+    { label: "Active tasks", value: String(work.length) },
+    { label: "Needs approval", value: String(review) },
+    { label: "Running", value: String(running) },
+    { label: "Stations", value: String(stations) },
+  ], y + 3);
 
   autoTable(doc, {
-    startY: y + 10,
+    startY: y + 34,
     head: [["ID", "Task", "Station", "Owner", "Status", "Time"]],
     body: work.map(item => [item.id, item.name, item.tool, item.owner, item.status, item.timestamp]),
-    styles: { fontSize: 8.5, cellPadding: 3 },
+    margin: { left: 14, right: 14 },
+    styles: { fontSize: 8.5, cellPadding: 3, textColor: PDF_CHARCOAL, lineColor: [237, 225, 214], lineWidth: 0.15 },
     headStyles: { fillColor: PDF_ORANGE, textColor: 255, fontStyle: "bold" },
     alternateRowStyles: { fillColor: [255, 248, 240] },
     columnStyles: { 1: { cellWidth: 62 } },
@@ -1295,10 +1395,11 @@ function saveOperationsPdf(work: WorkItem[]) {
   doc.save("altra-operations.pdf");
 }
 
-function Dock({ active, side = false, select }: {
+function Dock({ active, side = false, select, availableViews = views }: {
   active: View;
   side?: boolean;
   select: (view: View) => void;
+  availableViews?: readonly (typeof views)[number][];
 }) {
   const nav = useRef<HTMLElement>(null);
   const marker = useRef<HTMLSpanElement>(null);
@@ -1331,7 +1432,7 @@ function Dock({ active, side = false, select }: {
   return <nav ref={nav} className={side ? "gd-dock gd-dock-side" : "gd-dock gd-dock-bottom"}
     aria-label={side ? "Workspace shortcuts" : "Workspace views"}>
     <span ref={marker} className="gd-dock-indicator" aria-hidden="true" />
-    {views.map(({ id, label, short, icon: Icon }) => (
+    {availableViews.map(({ id, label, short, icon: Icon }) => (
       <a href={`#${id}`} key={id} aria-label={label} aria-current={active === id ? "page" : undefined} onClick={event => onSelect(event, id)}>
         <Icon aria-hidden="true" />
         <span className="gd-dock-text" aria-hidden="true">{label}</span>
@@ -1359,10 +1460,10 @@ function Dialog({ title, children, close }: { title: string; children: ReactNode
   </dialog>;
 }
 
-function QuickActions({ workspaceName, select, close }: { workspaceName: string; select: (view: View) => void; close: () => void }) {
+function QuickActions({ workspaceName, select, close, availableViews = views }: { workspaceName: string; select: (view: View) => void; close: () => void; availableViews?: readonly (typeof views)[number][] }) {
   const [query, setQuery] = useState("");
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  const results = views.filter(view => terms.every(term =>
+  const results = availableViews.filter(view => terms.every(term =>
     `${view.label} ${view.description} ${view.prompt}`.toLowerCase().includes(term)));
   return <Dialog title={"Search " + workspaceName} close={close}>
     <label className="gd-search gd-command-input"><Search aria-hidden="true" />
@@ -1385,12 +1486,31 @@ function AltraAdmin({
   workspaceName = "ALTRA",
   panelFrost = 12,
   initialTheme = "light",
+  role = "owner",
+  userEmail = "owner@altra.tz",
+  onLogout,
 }: AltraAdminProps = {}) {
-  const [view, setView] = useState<View>(routeFromHash);
+  const availableViews = views.filter(item => canAccessView(role, item.id));
+  const initialView = routeFromHash();
+  const [view, setView] = useState<View>(canAccessView(role, initialView) ? initialView : "command");
   const [active, setActive] = useState(view);
   const [period, setPeriod] = useState<Period>("30 days");
   const [theme, setTheme] = useState(initialTheme);
+  const [menuItems, setMenuItems] = useState<Dish[]>(dishes);
   useEffect(() => setTheme(initialTheme), [initialTheme]);
+  useEffect(() => {
+    const syncMenu = () => setMenuItems(readMenuDishes());
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === "altra-menu-dishes") syncMenu();
+    };
+    syncMenu();
+    window.addEventListener("altra-menu-dishes-updated", syncMenu);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("altra-menu-dishes-updated", syncMenu);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
   const [modal, setModal] = useState<Modal>(null);
   const [work, setWork] = useState(initialWork);
   const [readNotices, setReadNotices] = useState(false);
@@ -1419,12 +1539,16 @@ function AltraAdmin({
   });
 
   function selectView(next: View) {
+    if (!canAccessView(role, next)) return;
     if (location.hash !== `#${next}`) history.pushState(null, "", `#${next}`);
     changeView(next);
   }
 
   useEffect(() => {
-    const restore = () => changeView(routeFromHash());
+    const restore = () => {
+      const requested = routeFromHash();
+      changeView(canAccessView(role, requested) ? requested : "command");
+    };
     addEventListener("popstate", restore);
     addEventListener("hashchange", restore);
     return () => {
@@ -1472,6 +1596,14 @@ function AltraAdmin({
   const reviewCount = work.filter(item => item.status === "Needs review").length;
   const close = () => setModal(null);
   const inspect = (item: WorkItem) => setModal({ itemId: item.id });
+  const updateMenuItems = (next: Dish[]) => {
+    setMenuItems(next);
+    try {
+      saveMenuDishes(next);
+    } catch {
+      // The browser menu stays editable in memory when storage is unavailable.
+    }
+  };
   const downloadReport = () => {
     const stats = analytics[period];
     saveCsv(`altra-trends-${period.replace(" ", "-")}.csv`, [
@@ -1502,11 +1634,16 @@ function AltraAdmin({
           <button type="button" className="gd-icon-button gd-notices" aria-label="Notifications" onClick={() => { setReadNotices(true); setModal("notifications"); }}>
             <Bell aria-hidden="true" />{!readNotices && reviewCount > 0 && <i aria-hidden="true" />}
           </button>
+          <span className="gd-user-role" title={`${userEmail} · ${roleLabels[role]}`}>
+            <ShieldCheck aria-hidden="true" />
+            <span><strong>{roleLabels[role]}</strong><small>{userEmail}</small></span>
+          </span>
+          {onLogout && <button type="button" className="gd-icon-button gd-logout" aria-label="Log out" title="Log out" onClick={onLogout}><LogOut aria-hidden="true" /></button>}
         </div>
       </header>
 
       <div className="gd-stage-wrap">
-        <Dock active={active} side select={selectView} />
+        <Dock active={active} side select={selectView} availableViews={availableViews} />
         <main className="gd-stage">
           <div className="gd-stage-scroll" ref={scrollArea}>
             <header className="gd-view-head">
@@ -1515,7 +1652,7 @@ function AltraAdmin({
                 <p>{current.description}</p>
               </div>
               <div className="gd-view-actions">
-                {view !== "operations" && <div className="gd-period" role="group" aria-label="Reporting period">
+                {view !== "operations" && view !== "menu" && <div className="gd-period" role="group" aria-label="Reporting period">
                   {periods.map(item => <button type="button" key={item} aria-pressed={item === period} onClick={() => setPeriod(item)}>{item}</button>)}
                 </div>}
                 {(view === "operations" || view === "trends") && <>
@@ -1532,17 +1669,18 @@ function AltraAdmin({
               {view === "command" && <CommandView period={period} open={selectView} />}
               {(view === "trends" || view === "metrics") && <AnalyticsView period={period} type={view} download={downloadReport} downloadPdf={() => saveTrendsPdf(period)} />}
               {view === "operations" && <OperationsView work={work} inspect={inspect} />}
+              {view === "menu" && <AdminMenuManager items={menuItems} onChange={updateMenuItems} />}
             </div>
           </div>
         </main>
-        <Dock active={active} select={selectView} />
+        <Dock active={active} select={selectView} availableViews={availableViews} />
       </div>
       <footer className="gd-footer"><span>Altra Admin · sample workspace</span>{backgroundCredit &&
         <a href={backgroundCredit.href} target="_blank" rel="noreferrer">{backgroundCredit.label}<ArrowUpRight aria-hidden="true" /></a>}
       </footer>
     </div>
 
-    {modal === "search" && <QuickActions workspaceName={workspaceName} select={selectView} close={close} />}
+    {modal === "search" && <QuickActions workspaceName={workspaceName} select={selectView} close={close} availableViews={availableViews} />}
     {modal === "notifications" && <Dialog title="Notifications" close={close}>
       <div className="gd-quick-list">
         {work.filter(item => item.status === "Needs review").map(item => <button type="button" key={item.id}

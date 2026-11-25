@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import { categories, dishes, formatTZS } from "@/lib/data";
+import { categories, dishes as seedDishes, formatTZS } from "@/lib/data";
+import { getAvailableMenuDishes, MENU_KEY, MENU_UPDATED_EVENT, readMenuDishes } from "@/lib/menu-store";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +16,25 @@ type Category = (typeof categories)[number];
 /** Animated filterable food grid for /menu (Framer Motion layout animations). */
 export function MenuGrid() {
   const [active, setActive] = useState<Category>("All");
+  const [menuDishes, setMenuDishes] = useState(seedDishes);
+
+  useEffect(() => {
+    const update = () => setMenuDishes(readMenuDishes());
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === MENU_KEY) update();
+    };
+    update();
+    window.addEventListener(MENU_UPDATED_EVENT, update);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(MENU_UPDATED_EVENT, update);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
+  const availableDishes = getAvailableMenuDishes(menuDishes);
   const filtered =
-    active === "All" ? dishes : dishes.filter((d) => d.category === active);
+    active === "All" ? availableDishes : availableDishes.filter((d) => d.category === active);
 
   return (
     <section className="mx-auto max-w-7xl px-6 pb-24 pt-32 lg:px-8">

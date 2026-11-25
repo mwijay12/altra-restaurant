@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState, type ComponentPropsWithoutRef } from "react";
+import { useEffect, useRef, useState, type ComponentPropsWithoutRef } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
-import { featuredDishes, formatTZS, type Dish } from "@/lib/data";
+import { featuredDishes as seedFeaturedDishes, formatTZS, type Dish } from "@/lib/data";
+import { getAvailableMenuDishes, MENU_KEY, MENU_UPDATED_EVENT, readMenuDishes } from "@/lib/menu-store";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Badge } from "@/components/ui/badge";
 import { TransitionLink } from "@/components/layout/transition-link";
@@ -92,7 +93,7 @@ function DishCard({ dish, className }: { dish: Dish; className?: string }) {
 export function PopularDishes({
   title = "This week's obsessions",
   eyebrow = "Most loved",
-  dishes = featuredDishes,
+  dishes = seedFeaturedDishes,
   ...rest
 }: {
   title?: string;
@@ -103,6 +104,24 @@ export function PopularDishes({
   const trackRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [activeCard, setActiveCard] = useState(0);
+  const [liveDishes, setLiveDishes] = useState(seedFeaturedDishes);
+  const displayedDishes = dishes === seedFeaturedDishes ? liveDishes : dishes;
+
+  useEffect(() => {
+    const update = () => {
+      setLiveDishes(getAvailableMenuDishes(readMenuDishes()).filter((dish) => dish.featured));
+    };
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === MENU_KEY) update();
+    };
+    update();
+    window.addEventListener(MENU_UPDATED_EVENT, update);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(MENU_UPDATED_EVENT, update);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   const syncActiveCard = () => {
     const track = trackRef.current;
@@ -219,7 +238,7 @@ export function PopularDishes({
           tabIndex={0}
           style={{ touchAction: "pan-x pan-y", WebkitOverflowScrolling: "touch" }}
         >
-          {dishes.map((dish) => (
+          {displayedDishes.map((dish) => (
             <div key={dish.id} data-dish-card className="shrink-0 snap-start">
               <DishCard dish={dish} />
             </div>
@@ -243,8 +262,8 @@ export function PopularDishes({
           </div>
         </div>
         <div className="mx-6 mt-2 flex items-center justify-between md:hidden">
-          <div className="flex items-center gap-2" aria-label={`Slide ${Math.min(activeCard + 1, dishes.length)} of ${dishes.length}`}>
-            {dishes.map((dish, index) => (
+          <div className="flex items-center gap-2" aria-label={`Slide ${Math.min(activeCard + 1, displayedDishes.length)} of ${displayedDishes.length}`}>
+            {displayedDishes.map((dish, index) => (
               <span
                 key={dish.id}
                 className={`h-1.5 rounded-full transition-all duration-300 ${activeCard === index ? "w-6 bg-accent" : "w-1.5 bg-foreground/20"}`}
@@ -266,7 +285,7 @@ export function PopularDishes({
               type="button"
               aria-label="Next dishes"
               onClick={() => moveCarousel(1)}
-              disabled={activeCard >= dishes.length - 1}
+              disabled={activeCard >= displayedDishes.length - 1}
               className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground shadow-md shadow-accent/20 transition hover:scale-105 disabled:opacity-35"
             >
               <ArrowRight className="size-4" />

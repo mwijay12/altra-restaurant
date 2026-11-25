@@ -22,6 +22,8 @@ export interface Dish {
   image: string;
   tag?: string;
   featured?: boolean;
+  /** False hides the dish from both menu and homepage while retaining its record. */
+  available?: boolean;
 }
 
 const img = (id: string, w = 800) =>

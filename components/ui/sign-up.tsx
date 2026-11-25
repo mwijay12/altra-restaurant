@@ -339,10 +339,11 @@ useEffect(() => {
                         <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-[clamp(2rem,8vw,3.75rem)] sm:text-5xl md:text-6xl leading-tight tracking-tight text-foreground">Admin sign in</p></div></BlurFade>
                         <BlurFade delay={0.25 * 2}><p className="text-sm font-medium text-muted-foreground">Demo access to the Altra workspace</p></BlurFade>
                         <BlurFade delay={0.25 * 3}><div className="flex items-center justify-center gap-4 w-full">
-                            <GlassButton contentClassName="flex items-center justify-center gap-2" size="sm" onClick={onGoogleLogin}><GoogleIcon /><span className="font-semibold text-foreground">Google demo</span></GlassButton>
+                            <GlassButton contentClassName="flex items-center justify-center gap-2" size="sm" onClick={onGoogleLogin}><GoogleIcon /><span className="font-semibold text-foreground">Google · Owner demo</span></GlassButton>
                         </div></BlurFade>
                         <BlurFade delay={0.25 * 4} className="w-full"><div className="flex items-center w-full gap-2 py-2"><hr className="w-full border-border"/><span className="text-xs font-semibold text-muted-foreground">OR EMAIL</span><hr className="w-full border-border"/></div></BlurFade>
-                        <BlurFade delay={0.25 * 5}><p className="text-center text-xs text-muted-foreground">Use any valid email and a password of 6+ characters.</p></BlurFade>
+                        <BlurFade delay={0.25 * 5}><p className="text-center text-xs text-muted-foreground">Demo roles: owner@altra.tz (full access), editor@altra.tz (menu edits), any other email (read only). Password: 6+ characters.</p></BlurFade>
+                        <BlurFade delay={0.25 * 6}><p className="text-center text-[11px] text-muted-foreground/80">Sessions end after 30 minutes idle (8-hour maximum).</p></BlurFade>
                     </motion.div>}
                     {authStep === "password" && <motion.div key="password-title" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center text-center gap-4">
                         <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-[clamp(1.9rem,7vw,3rem)] sm:text-5xl leading-tight tracking-tight text-foreground">Create your password</p></div></BlurFade>
@@ -357,7 +358,7 @@ useEffect(() => {
                 <form onSubmit={handleFinalSubmit} className="w-full max-w-[300px] space-y-6">
                      <AnimatePresence>
                         {authStep !== 'confirmPassword' && <motion.div key="email-password-fields" exit={{ opacity: 0, filter: 'blur(4px)' }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full space-y-6">
-                            <BlurFade delay={authStep === 'email' ? 0.25 * 6 : 0} inView={true} className="w-full">
+                            <BlurFade delay={authStep === 'email' ? 0.25 * 7 : 0} inView={true} className="w-full">
                                 <div className="relative w-full">
                                     <AnimatePresence>
                                         {authStep === "password" && <motion.div initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.3, delay: 0.4 }} className="absolute -top-6 left-4 z-10"><label className="text-xs text-muted-foreground font-semibold">Email</label></motion.div>}
