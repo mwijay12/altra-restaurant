@@ -540,29 +540,48 @@ const dashboardStyles = `
   .gd-command-grid > .gd-activity { grid-column: 1 / -1; }
 }
 @media (max-width: 760px) {
-  .gd-surround { padding-top: 11px; padding-bottom: calc(73px + env(safe-area-inset-bottom)); inline-size: calc(100% - 24px); }
-  .gd-top { grid-template-columns: minmax(0, 1fr) auto; padding: 7px 9px; gap: 6px 12px; border-radius: 21px; }
-  .gd-brand { padding-inline-start: 3px; }
-  .gd-ask { grid-area: 2 / 1 / 3 / -1; min-block-size: 41px; }
-  .gd-top-actions { grid-area: 1 / 2; }
-  .gd-top-actions .gd-icon-button { width: 41px; min-inline-size: 41px; min-block-size: 41px; }
-  .gd-stage { border-radius: 23px; }
-  .gd-stage-scroll { block-size: auto; padding: 15px 13px 17px; overflow: visible; }
-  .gd-view-head { align-items: flex-start; flex-direction: column; gap: 10px; margin-bottom: 14px; }
-  .gd-view-head p { font-size: 12px; margin-top: 6px; }
-  .gd-view-actions { justify-content: flex-start; }
+  .gd-surround { padding-top: 10px; padding-bottom: calc(76px + env(safe-area-inset-bottom)); inline-size: calc(100% - 20px); }
+  .gd-top { grid-template-columns: minmax(0, 1fr) auto; padding: 6px 8px; gap: 5px 10px; border-radius: 20px; }
+  .gd-brand { padding-inline-start: 2px; gap: 8px; }
+  .gd-brand small { display: none; }
+  .gd-logo { inline-size: 31px; block-size: 31px; }
+  .gd-logo svg { width: 18px; height: 18px; }
+  .gd-ask { grid-area: 2 / 1 / 3 / -1; min-block-size: 39px; padding-inline: 6px 11px; }
+  .gd-orb { inline-size: 21px; block-size: 21px; }
+  .gd-prompt { font-size: 11px; }
+  .gd-top-actions { grid-area: 1 / 2; gap: 5px; }
+  .gd-top-actions .gd-icon-button { width: 39px; min-inline-size: 39px; min-block-size: 39px; }
+  .gd-stage { border-radius: 22px; }
+  .gd-stage-scroll { block-size: auto; padding: 13px 11px 15px; overflow: visible; }
+  .gd-view-head { align-items: flex-start; flex-direction: column; gap: 9px; margin-bottom: 13px; }
+  .gd-view-head h1 { font-size: 26px; }
+  .gd-view-head p { font-size: 12px; margin-top: 5px; }
+  .gd-view-actions { justify-content: flex-start; inline-size: 100%; }
+  .gd-period { flex: 1; justify-content: space-between; }
+  .gd-period button { flex: 1; min-block-size: 39px; min-inline-size: 0; padding: 0 8px; font-size: 10.5px; }
   .gd-command-grid, .gd-analytics-grid { grid-template-columns: minmax(0, 1fr); }
   .gd-command-side, .gd-command-grid > .gd-activity { grid-column: 1; }
-  .gd-metric-grid, .gd-lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gd-metric-grid, .gd-lanes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .gd-metric { min-block-size: 100px; padding: 10px; }
+  .gd-metric-value { font-size: 20px; }
+  .gd-summary .gd-metric-value { font-size: 19px; }
+  .gd-balance-number { font-size: 26px; }
+  .gd-panel { padding: 13px 12px; }
+  .gd-panel-head h2 { font-size: 13px; }
+  .gd-balance-actions { gap: 5px; }
+  .gd-primary, .gd-secondary { min-block-size: 42px; font-size: 11px; padding-inline: 9px; }
+  .gd-streams { padding: 7px 1px; }
+  .gd-streams strong { font-size: 10px; }
+  .gd-swatch { inline-size: 44px; block-size: 32px; font-size: 10px; }
   .gd-dock-side { display: none; }
-  .gd-dock-bottom { position: fixed; inset: auto 11px calc(9px + env(safe-area-inset-bottom)); translate: none; justify-content: space-between; }
-  .gd-dock-bottom a { flex: 1; flex-direction: column; gap: 2px; padding: 3px 5px; min-block-size: 47px; line-height: 1.2; font-size: 9.5px; }
+  .gd-dock-bottom { position: fixed; inset: auto 10px calc(8px + env(safe-area-inset-bottom)); translate: none; justify-content: space-between; padding: 3px; }
+  .gd-dock-bottom a { flex: 1; flex-direction: column; gap: 2px; padding: 3px 4px; min-block-size: 46px; line-height: 1.2; font-size: 9px; }
   .gd-dock-bottom a svg { width: 15px; height: 15px; }
   .gd-dock-bottom .gd-dock-text { display: none; }
   .gd-dock-bottom .gd-dock-short { display: inline; }
-  .gd-footer { padding-top: 9px; }
-  .gd-period button { min-block-size: 41px; }
-  .gd-primary, .gd-secondary { min-block-size: 44px; }
+  .gd-footer { padding-top: 8px; }
+  .gd-dialog-inner { padding: 14px; }
+  .gd-dialog-inner h2 { font-size: 20px; }
 }
 @media (max-width: 420px) {
   .gd-panel { padding: 12px; }

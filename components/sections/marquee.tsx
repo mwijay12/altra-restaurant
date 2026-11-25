@@ -6,14 +6,14 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 
 const items = [
-  "Burgers",
-  "Pizza",
-  "Sushi",
-  "Tacos",
-  "Ramen",
-  "Desserts",
-  "Grills",
-  "Smoothies",
+  "Chipsi Mayai",
+  "Pilau",
+  "Mishkaki",
+  "Nyama Choma",
+  "Samaki",
+  "Mtori",
+  "Samosa",
+  "Mahamri",
 ];
 
 function Strip({

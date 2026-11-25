@@ -1,15 +1,16 @@
 /* ─────────────────────────────────────────────────────────────
    Altra · shared content layer
    Prices are in Tanzanian Shillings (TZS), Dar es Salaam.
+   Menu photos are self-hosted WebP in /public/images/food/.
    ───────────────────────────────────────────────────────────── */
 
 export type DishCategory =
-  | "Burgers"
-  | "Pizza"
-  | "Sushi"
-  | "Tacos"
-  | "Ramen"
-  | "Desserts";
+  | "Choma & Grill"
+  | "Rice & Pilau"
+  | "Sides & Snacks"
+  | "Seafood"
+  | "Soups & Stews"
+  | "Drinks & Desserts";
 
 export interface Dish {
   id: string;
@@ -26,155 +27,181 @@ export interface Dish {
 const img = (id: string, w = 800) =>
   `https://images.unsplash.com/${id}?w=${w}&q=80&auto=format&fit=crop`;
 
+const food = (slug: string) => `/images/food/${slug}.webp`;
+
 export const categories: Array<"All" | DishCategory> = [
   "All",
-  "Burgers",
-  "Pizza",
-  "Sushi",
-  "Tacos",
-  "Ramen",
-  "Desserts",
+  "Choma & Grill",
+  "Rice & Pilau",
+  "Sides & Snacks",
+  "Seafood",
+  "Soups & Stews",
+  "Drinks & Desserts",
 ];
 
 export const dishes: Dish[] = [
   {
-    id: "smash-classic",
-    name: "Altra Smash Classic",
+    id: "chipsi-mayai",
+    name: "Chipsi Mayai",
     description:
-      "Double smashed patties, burnt-butter mayo, dill pickles, soft potato bun.",
-    price: 8500,
-    category: "Burgers",
-    image: img("photo-1550547660-d9450f859349"),
+      "Golden fries folded through a soft egg omelette, kachumbari on the side — the Dar classic.",
+    price: 8000,
+    category: "Sides & Snacks",
+    image: food("chipsi-mayai"),
     tag: "Bestseller",
     featured: true,
   },
   {
-    id: "swati-grill",
-    name: "Swati Grill Burger",
+    id: "pilau-beef",
+    name: "Pilau Beef",
     description:
-      "Coconut-clove glaze, charred mango slaw, nyawa-spiced mayo — a Dar twist.",
-    price: 9800,
-    category: "Burgers",
-    image: img("photo-1568901346375-23c9450c58cd"),
-    tag: "Local twist",
-    featured: true,
-  },
-  {
-    id: "smokehouse-stack",
-    name: "Smokehouse Stack",
-    description:
-      "BBQ glaze, crispy onion tangle, smoked cheddar, bacon jam.",
-    price: 9500,
-    category: "Burgers",
-    image: img("photo-1571091718767-18b5b1457add"),
-  },
-  {
-    id: "margherita-verace",
-    name: "Margherita Verace",
-    description:
-      "San Marzano tomato, fior di latte, torn basil, 48-hour dough.",
+      "Basmati simmered in beef broth with cinnamon, cardamom and cloves, served with kachumbari.",
     price: 12000,
-    category: "Pizza",
-    image: img("photo-1513104890138-7c749659a591"),
+    category: "Rice & Pilau",
+    image: food("pilau-beef"),
     featured: true,
   },
   {
-    id: "pepperoni-fest",
-    name: "PepperoniFest",
+    id: "wali-mahindi",
+    name: "Wali Mahindi",
     description:
-      "Double cup-and-char pepperoni, hot honey drizzle, mozzarella blanket.",
-    price: 13500,
-    category: "Pizza",
-    image: img("photo-1565299624946-b28f40a0ae38"),
-    tag: "Spicy",
+      "Fluffy white rice steamed with sweet corn kernels, coconut milk and a whisper of cardamom.",
+    price: 7000,
+    category: "Rice & Pilau",
+    image: food("wali-mahindi"),
   },
   {
-    id: "salmon-aburi",
-    name: "Salmon Aburi Roll",
+    id: "mishkaki",
+    name: "Mishkaki",
     description:
-      "Torched salmon belly, avocado, yuzu soy, crisped rice.",
-    price: 18000,
-    category: "Sushi",
-    image: img("photo-1579871494447-9811cf80d66c"),
+      "Charcoal-grilled beef skewers in a tangy tamarind glaze, lemon wedges and chilli on the side.",
+    price: 10000,
+    category: "Choma & Grill",
+    image: food("mishkaki"),
     tag: "Chef's pick",
     featured: true,
   },
   {
-    id: "rainbow-maki",
-    name: "Rainbow Maki",
+    id: "nyama-choma",
+    name: "Nyama Choma",
     description:
-      "Eight-piece maki draped in tuna, salmon and avocado ribbons.",
-    price: 16500,
-    category: "Sushi",
-    image: img("photo-1579584425555-c3ce17fd4351"),
-  },
-  {
-    id: "baja-fish-tacos",
-    name: "Baja Fish Tacos",
-    description:
-      "Beer-battered kingfish, lime crema, pickled onion, cabbage shred.",
-    price: 7500,
-    category: "Tacos",
-    image: img("photo-1599974579688-8dbdd335c77f"),
+      "Slow-grilled beef over charcoal, rubbed with nyawa and garlic, served sizzling with ugali.",
+    price: 15000,
+    category: "Choma & Grill",
+    image: food("nyama-choma"),
     featured: true,
   },
   {
-    id: "street-tacos",
-    name: "Mshek Street Tacos",
+    id: "ugali-sukuma",
+    name: "Ugali & Sukuma Wiki",
     description:
-      "Mshek-grilled beef, salsa verde, coriander, double tortilla.",
-    price: 6500,
-    category: "Tacos",
-    image: img("photo-1565299507177-b0ac66763828"),
+      "Firm maize ugali with sautéed collard greens, tomato and onion — the Tanzanian staple.",
+    price: 9000,
+    category: "Choma & Grill",
+    image: food("ugali-sukuma"),
+    featured: true,
+  },
+  {
+    id: "kachumbari",
+    name: "Kachumbari",
+    description:
+      "Fresh tomato, red onion and avocado tossed with lime and a pinch of chilli.",
+    price: 3000,
+    category: "Sides & Snacks",
+    image: food("kachumbari"),
+  },
+  {
+    id: "samosa",
+    name: "Samosa",
+    description:
+      "Crisp golden triangles, spiced beef and potato filling, served with tamarind chutney.",
+    price: 4000,
+    category: "Sides & Snacks",
+    image: food("samosa"),
     tag: "New",
   },
   {
-    id: "tonkotsu-classic",
-    name: "Tonkotsu Classic",
+    id: "mahamri",
+    name: "Mahamri",
     description:
-      "18-hour pork broth, chashu belly, ajitama egg, black garlic oil.",
+      "Coconut doughnuts, pillowy and golden, dusted with sugar — best with chai.",
+    price: 2500,
+    category: "Drinks & Desserts",
+    image: food("mahamri"),
+  },
+  {
+    id: "vitumbua",
+    name: "Vitumbua",
+    description:
+      "Rice pancakes, crisp-edged and soft in the middle, served with coconut syrup.",
+    price: 3000,
+    category: "Drinks & Desserts",
+    image: food("vitumbua"),
+  },
+  {
+    id: "samaki",
+    name: "Samaki wa Kukaanga",
+    description:
+      "Whole lake fish, fried crisp in a light batter, with lemon and kachumbari.",
+    price: 14000,
+    category: "Seafood",
+    image: food("samaki"),
+    featured: true,
+  },
+  {
+    id: "mtori",
+    name: "Mtori",
+    description:
+      "Slow-cooked green banana soup with beef, coconut milk and a squeeze of lime.",
+    price: 8000,
+    category: "Soups & Stews",
+    image: food("mtori"),
+    featured: true,
+  },
+  {
+    id: "kuku",
+    name: "Kuku wa Kukaanga",
+    description:
+      "Chicken marinated in garlic and lime, fried golden and served with chips.",
     price: 11000,
-    category: "Ramen",
-    image: img("photo-1569718212165-3a8278d5f624"),
-    featured: true,
+    category: "Choma & Grill",
+    image: food("kuku"),
   },
   {
-    id: "spicy-miso",
-    name: "Spicy Miso Ramen",
+    id: "maharage",
+    name: "Maharage",
     description:
-      "Red miso tare, chilli oil, sweetcorn, butter-smoked corn silk.",
-    price: 11500,
-    category: "Ramen",
-    image: img("photo-1585032226651-759b368d7246"),
-    tag: "Spicy",
-  },
-  {
-    id: "choco-lava",
-    name: "Molten Choco Lava",
-    description:
-      "70% dark core, salted vanilla ice cream, cocoa nib crunch.",
+      "Beans simmered in tomato and coconut milk with a gentle chilli warmth.",
     price: 6000,
-    category: "Desserts",
-    image: img("photo-1551024506-0bccd828d307"),
-    featured: true,
+    category: "Soups & Stews",
+    image: food("maharage"),
   },
   {
-    id: "berry-pancakes",
-    name: "Berry Cloud Pancakes",
+    id: "ndizi",
+    name: "Ndizi za Kuchemka",
     description:
-      "Soufflé stack, warm berry compote, whipped mascarpone cloud.",
-    price: 7000,
-    category: "Desserts",
-    image: img("photo-1567620905732-2d1ec7ab7445"),
+      "Green bananas boiled until tender, served with a knob of butter and salt.",
+    price: 4500,
+    category: "Sides & Snacks",
+    image: food("ndizi"),
   },
   {
-    id: "strawberry-waffle",
-    name: "Strawberry Waffle Cloud",
+    id: "madafu",
+    name: "Madafu",
     description:
-      "Liege waffle, roasted strawberries, white chocolate snow.",
-    price: 5500,
-    category: "Desserts",
-    image: img("photo-1565958011703-44f9829ba01a"),
+      "Fresh coconut, cracked open and served chilled with a straw.",
+    price: 3500,
+    category: "Drinks & Desserts",
+    image: food("madafu"),
+  },
+  {
+    id: "chai",
+    name: "Chai ya Tangawizi",
+    description:
+      "Spiced ginger tea, brewed strong with milk and a touch of honey.",
+    price: 2000,
+    category: "Drinks & Desserts",
+    image: food("chai"),
   },
 ];
 
@@ -191,7 +218,7 @@ export interface Testimonial {
 export const testimonials: Testimonial[] = [
   {
     quote:
-      "Ordered at 1pm, eating by 1:28. The burger was still steaming — I don't understand the physics, but I'm not complaining.",
+      "Ordered at 1pm, eating by 1:28. The pilau was still steaming — I don't understand the physics, but I'm not complaining.",
     name: "Amina M.",
     area: "Mikocheni",
     avatar: img("photo-1494790108377-be9c29b29330", 160),
@@ -199,7 +226,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Altra is the only app our whole building agrees on. Sushi Fridays have become sacred.",
+      "Altra is the only app our whole building agrees on. Mishkaki Fridays have become sacred.",
     name: "Juma K.",
     area: "Masaki",
     avatar: img("photo-1507003211169-0a1dd7228f2d", 160),
@@ -207,7 +234,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "The ramen tastes like the restaurant moved into my house. Thirty minutes, hot broth, zero drama.",
+      "The mtori tastes like my grandmother's kitchen moved into my house. Thirty minutes, hot soup, zero drama.",
     name: "Zawadi N.",
     area: "Sinza",
     avatar: img("photo-1534528741775-53994a69daeb", 160),
@@ -215,7 +242,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Free delivery on my first order got me. The 30-minute guarantee keeps me. Ten orders in, zero cold fries.",
+      "Free delivery on my first order got me. The 30-minute guarantee keeps me. Ten orders in, zero cold chipsi.",
     name: "Frank O.",
     area: "Kariakoo",
     avatar: img("photo-1506794778202-cad84cf45f1d", 160),
