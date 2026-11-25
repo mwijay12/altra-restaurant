@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AltraAdmin } from "@/components/ui/altra-admin";
+import { isSignedIn } from "@/lib/auth";
 
 const settings = { workspaceName: "ALTRA", panelFrost: 12 };
 
@@ -27,6 +29,26 @@ function useWorkspaceTheme() {
 
 export default function AdminPage() {
   const dark = useWorkspaceTheme();
+  const router = useRouter();
+  const [allowed, setAllowed] = useState(false);
+
+  // Demo gate: /admin requires a (demo) sign-in from /login.
+  useEffect(() => {
+    if (isSignedIn()) {
+      setAllowed(true);
+    } else {
+      router.replace("/login");
+    }
+  }, [router]);
+
+  if (!allowed) {
+    return (
+      <div className="grid min-h-svh place-items-center bg-background text-muted-foreground">
+        <p className="text-sm">Checking sign-in…</p>
+      </div>
+    );
+  }
+
   return (
     <AltraAdmin
       workspaceName={settings.workspaceName}

@@ -13,6 +13,7 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/menu", label: "Menu" },
   { href: "/about", label: "About" },
+  { href: "/login", label: "Login" },
 ];
 
 function Logo() {
@@ -63,7 +64,7 @@ export function Navbar() {
   // NOTE: this MUST stay after every hook — Navbar lives in the root
   // layout, so a conditional return above any hook breaks the hook order
   // across route changes (React "rendered fewer hooks" crash).
-  if (pathname === "/" || pathname === "/admin") return null;
+  if (pathname === "/" || pathname === "/admin" || pathname === "/login") return null;
 
   const toggleTheme = () => {
     const next = !dark;

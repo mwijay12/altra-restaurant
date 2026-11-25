@@ -38,6 +38,15 @@
   --cream: #fff8f0;
   --charcoal: #1a1a1a;
   --orange: #ff6a1a;
+  --primary: #ff6a1a;
+  --primary-foreground: #1a1208;
+  --secondary: #3a2c22;
+  --destructive: #f87171;
+  --chart-1: #ff6a1a;
+  --chart-2: #ffd6c0;
+  --chart-3: #f7f1e8;
+  --chart-4: #ff8a3d;
+  --chart-5: #8a6a4f;
 }
 
 @theme inline {

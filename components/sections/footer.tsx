@@ -49,7 +49,7 @@ export function Footer() {
   const [subscribed, setSubscribed] = useState(false);
 
   // The admin workspace is full-viewport — no site chrome there.
-  if (pathname === "/admin") return null;
+  if (pathname === "/admin" || pathname === "/login") return null;
 
   return (
     <footer className="bg-charcoal text-cream">
