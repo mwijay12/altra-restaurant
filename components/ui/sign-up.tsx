@@ -290,7 +290,28 @@ useEffect(() => {
   );
 
   return (
-    <div className="bg-background min-h-svh w-full overflow-hidden flex flex-col">
+    <div
+      className="min-h-svh w-full overflow-hidden flex flex-col bg-background text-foreground"
+      style={{
+        "--background": "#fff8f0",
+        "--foreground": "#211811",
+        "--card": "#fffdf9",
+        "--border": "#ead8c7",
+        "--muted": "#f7ede3",
+        "--muted-foreground": "#756354",
+        "--accent": "#e95712",
+        "--accent-foreground": "#fffaf5",
+        "--primary": "#e95712",
+        "--primary-foreground": "#fffaf5",
+        "--secondary": "#ffd6c0",
+        "--destructive": "#d94820",
+        "--chart-1": "#e95712",
+        "--chart-2": "#ffd6c0",
+        "--chart-3": "#f8c89e",
+        "--chart-4": "#efa66e",
+        "--chart-5": "#fff0df",
+      } as React.CSSProperties}
+    >
         <style>{`
             input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none !important; } input[type="password"]::-webkit-credentials-auto-fill-button, input[type="password"]::-webkit-strong-password-auto-fill-button { display: none !important; } input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active { -webkit-box-shadow: 0 0 0 30px transparent inset !important; -webkit-text-fill-color: var(--foreground) !important; background-color: transparent !important; background-clip: content-box !important; transition: background-color 5000s ease-in-out 0s !important; color: var(--foreground) !important; caret-color: var(--foreground) !important; } input:autofill { background-color: transparent !important; background-clip: content-box !important; -webkit-text-fill-color: var(--foreground) !important; color: var(--foreground) !important; } input:-internal-autofill-selected { background-color: transparent !important; background-image: none !important; color: var(--foreground) !important; -webkit-text-fill-color: var(--foreground) !important; } input:-webkit-autofill::first-line { color: var(--foreground) !important; -webkit-text-fill-color: var(--foreground) !important; }
             @property --angle-1 { syntax: "<angle>"; inherits: false; initial-value: -75deg; } @property --angle-2 { syntax: "<angle>"; inherits: false; initial-value: -45deg; }
@@ -307,12 +328,15 @@ useEffect(() => {
             <h1 className="text-base font-bold text-foreground">{brandName}</h1>
         </div>
 
-        <div className={cn("flex w-full flex-1 h-full items-center justify-center bg-card", "relative overflow-hidden")}>
-            <div className="absolute inset-0 z-0"><GradientBackground /></div>
-            <fieldset disabled={modalStatus !== 'closed'} className="relative z-10 flex w-full max-w-sm flex-col items-center gap-8 mx-auto p-4">
+        <div
+          className="relative flex h-full w-full flex-1 items-center justify-center overflow-hidden"
+          style={{ background: "linear-gradient(135deg, #fff8f0 0%, #ffead9 48%, #fff4e8 100%)" }}
+        >
+            <div className="absolute inset-0 z-0 opacity-90"><GradientBackground /></div>
+            <fieldset disabled={modalStatus !== 'closed'} className="relative z-10 flex w-full max-w-sm flex-col items-center gap-8 mx-4 rounded-[2rem] border border-white/80 bg-white/55 p-6 shadow-[0_24px_80px_rgba(113,69,37,0.14)] backdrop-blur-2xl sm:p-8">
                 <AnimatePresence mode="wait">
                     {authStep === "email" && <motion.div key="email-content" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center gap-4">
-                        <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl md:text-6xl tracking-tight text-foreground whitespace-nowrap">Admin sign in</p></div></BlurFade>
+                        <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-[clamp(2rem,8vw,3.75rem)] sm:text-5xl md:text-6xl leading-tight tracking-tight text-foreground">Admin sign in</p></div></BlurFade>
                         <BlurFade delay={0.25 * 2}><p className="text-sm font-medium text-muted-foreground">Demo access to the Altra workspace</p></BlurFade>
                         <BlurFade delay={0.25 * 3}><div className="flex items-center justify-center gap-4 w-full">
                             <GlassButton contentClassName="flex items-center justify-center gap-2" size="sm" onClick={onGoogleLogin}><GoogleIcon /><span className="font-semibold text-foreground">Google demo</span></GlassButton>
@@ -321,11 +345,11 @@ useEffect(() => {
                         <BlurFade delay={0.25 * 5}><p className="text-center text-xs text-muted-foreground">Use any valid email and a password of 6+ characters.</p></BlurFade>
                     </motion.div>}
                     {authStep === "password" && <motion.div key="password-title" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center text-center gap-4">
-                        <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">Create your password</p></div></BlurFade>
+                        <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-[clamp(1.9rem,7vw,3rem)] sm:text-5xl leading-tight tracking-tight text-foreground">Create your password</p></div></BlurFade>
                         <BlurFade delay={0.25 * 1}><p className="text-sm font-medium text-muted-foreground">Your password must be at least 6 characters long.</p></BlurFade>
                     </motion.div>}
                      {authStep === "confirmPassword" && <motion.div key="confirm-title" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center text-center gap-4">
-                         <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">One Last Step</p></div></BlurFade>
+                         <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-[clamp(1.9rem,7vw,3rem)] sm:text-5xl leading-tight tracking-tight text-foreground">One Last Step</p></div></BlurFade>
                          <BlurFade delay={0.25 * 1}><p className="text-sm font-medium text-muted-foreground">Confirm your password to continue</p></BlurFade>
                     </motion.div>}
                 </AnimatePresence>

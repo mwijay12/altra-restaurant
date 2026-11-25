@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, type ComponentPropsWithoutRef } from "react";
+import { useRef, useState, type ComponentPropsWithoutRef } from "react";
 import Image from "next/image";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 import { featuredDishes, formatTZS, type Dish } from "@/lib/data";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +44,7 @@ function DishCard({ dish, className }: { dish: Dish; className?: string }) {
     <div
       ref={cardRef}
       className={
-        "group relative w-[280px] shrink-0 snap-start sm:w-[320px] md:w-[360px] " +
+        "group relative w-[min(84vw,360px)] shrink-0 snap-start md:w-[360px] " +
         (className ?? "")
       }
     >
@@ -102,6 +102,33 @@ export function PopularDishes({
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const [activeCard, setActiveCard] = useState(0);
+
+  const syncActiveCard = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-dish-card]"));
+    if (!cards.length) return;
+    const trackLeft = track.getBoundingClientRect().left;
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+    cards.forEach((card, index) => {
+      const distance = Math.abs(card.getBoundingClientRect().left - trackLeft);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+    setActiveCard(closestIndex);
+  };
+
+  const moveCarousel = (direction: -1 | 1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const firstCard = track.querySelector<HTMLElement>("[data-dish-card]");
+    const step = firstCard ? firstCard.getBoundingClientRect().width + 24 : track.clientWidth * 0.85;
+    track.scrollBy({ left: direction * step, behavior: "smooth" });
+  };
 
   useGSAP(
     () => {
@@ -185,16 +212,21 @@ export function PopularDishes({
       <div className="mt-12 md:mt-14">
         <div
           ref={trackRef}
-          className="no-scrollbar flex w-max snap-x snap-mandatory gap-6 overflow-x-auto scroll-pl-6 px-6 pb-4 md:overflow-visible md:px-10"
+          className="no-scrollbar flex w-full min-w-0 snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth scroll-pl-6 px-6 pb-4 md:w-max md:overflow-visible md:px-10"
+          onScroll={syncActiveCard}
+          aria-label="Featured dishes carousel"
+          role="region"
+          tabIndex={0}
+          style={{ touchAction: "pan-x pan-y", WebkitOverflowScrolling: "touch" }}
         >
           {dishes.map((dish) => (
-            <div key={dish.id} data-dish-card>
+            <div key={dish.id} data-dish-card className="shrink-0 snap-start">
               <DishCard dish={dish} />
             </div>
           ))}
 
           {/* End card */}
-          <div data-dish-card className="flex w-[280px] shrink-0 items-center sm:w-[320px] md:w-[360px]">
+          <div data-dish-card className="flex w-[min(84vw,360px)] shrink-0 snap-start items-center md:w-[360px]">
             <TransitionLink
               href="/menu"
               className="glass group flex h-56 w-full flex-col items-center justify-center gap-3 rounded-3xl text-center transition-colors hover:border-accent/40"
@@ -208,6 +240,37 @@ export function PopularDishes({
                 <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
               </span>
             </TransitionLink>
+          </div>
+        </div>
+        <div className="mx-6 mt-2 flex items-center justify-between md:hidden">
+          <div className="flex items-center gap-2" aria-label={`Slide ${Math.min(activeCard + 1, dishes.length)} of ${dishes.length}`}>
+            {dishes.map((dish, index) => (
+              <span
+                key={dish.id}
+                className={`h-1.5 rounded-full transition-all duration-300 ${activeCard === index ? "w-6 bg-accent" : "w-1.5 bg-foreground/20"}`}
+              />
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-muted-foreground">Swipe to explore</span>
+            <button
+              type="button"
+              aria-label="Previous dishes"
+              onClick={() => moveCarousel(-1)}
+              disabled={activeCard === 0}
+              className="grid size-10 place-items-center rounded-full border border-border bg-card text-foreground shadow-sm transition hover:border-accent hover:text-accent disabled:opacity-35"
+            >
+              <ArrowLeft className="size-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next dishes"
+              onClick={() => moveCarousel(1)}
+              disabled={activeCard >= dishes.length - 1}
+              className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground shadow-md shadow-accent/20 transition hover:scale-105 disabled:opacity-35"
+            >
+              <ArrowRight className="size-4" />
+            </button>
           </div>
         </div>
       </div>
