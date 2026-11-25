@@ -5,17 +5,15 @@ import { Moon, Sun } from "lucide-react";
 import { TransitionLink } from "@/components/layout/transition-link";
 
 /**
- * Flavour hero — Altra's take on the Blendy-style full-viewport slider.
- *
- * A 1440×900 design frame is scaled by --u; each flavour floods the screen
- * with one flat pastel colour, a giant Playfair word sits behind a centred
- * dish, and cut-out food pieces bob at different depths (two blurred corner
- * pieces). Flavour changes play a measured 970ms panel wipe (coverage table)
- * with per-layer parallax. Autoplay every 2.6s, paused 6s after any
- * interaction. Swipe, arrows, tabs and keyboard all work.
+ * Flavour hero — Altra's take on the Blendy-style full-viewport slider,
+ * flooded with the site's OWN brand colours (orange / charcoal / cream /
+ * pink). Desktop draws on a 1440×900 design frame; mobile recomposes
+ * everything on a 640×700 frame that always fits the viewport — nothing
+ * exceeds the screen. Flavour changes play a measured 970ms panel wipe
+ * with per-layer parallax. Autoplay 2.6s, paused 6s after interaction.
  */
 
-/* ── Cut-out assets actually generated & keyed into public/images/food/slides ── */
+/* ── Cut-out assets generated & keyed in-sandbox (public/images/food/slides) ── */
 const BUILT = new Set([
   "chipsi-hero",
   "chipsi-fry",
@@ -27,9 +25,15 @@ const BUILT = new Set([
   "pilau-coriander",
   "wali-hero",
   "wali-tomato",
+  "wali-onion",
+  "wali-chili",
+  "mishkaki-hero",
+  "mishkaki-skewer",
+  "mishkaki-lemon",
+  "mishkaki-pepper",
 ]);
 
-/* intrinsic pixel sizes of the generated cut-outs (kept in sync with dims) */
+/* intrinsic pixel sizes of the generated cut-outs (must match the files on disk) */
 const DIMS: Record<string, { w: number; h: number }> = {
   "chipsi-hero": { w: 555, h: 730 },
   "chipsi-fry": { w: 560, h: 136 },
@@ -41,12 +45,12 @@ const DIMS: Record<string, { w: number; h: number }> = {
   "pilau-coriander": { w: 429, h: 559 },
   "wali-hero": { w: 643, h: 643 },
   "wali-tomato": { w: 539, h: 560 },
-  "wali-onion": { w: 560, h: 430 },
-  "wali-chili": { w: 560, h: 560 },
-  "mishkaki-hero": { w: 900, h: 560 },
-  "mishkaki-skewer": { w: 560, h: 560 },
-  "mishkaki-lemon": { w: 560, h: 560 },
-  "mishkaki-pepper": { w: 560, h: 560 },
+  "wali-onion": { w: 560, h: 282 },
+  "wali-chili": { w: 413, h: 411 },
+  "mishkaki-hero": { w: 900, h: 411 },
+  "mishkaki-skewer": { w: 560, h: 307 },
+  "mishkaki-lemon": { w: 560, h: 291 },
+  "mishkaki-pepper": { w: 560, h: 334 },
 };
 
 interface Piece {
@@ -58,93 +62,174 @@ interface Piece {
   mirror?: boolean;
 }
 
-interface SlideDef {
-  key: string;
-  word: string;
-  bg: string;
+interface Layout {
   heroW: number;
   floaters: Piece[];
   corners: Piece[];
 }
 
-/* Layout on the 1440×900 frame (design px). Heroes sit centred on x=720,
-   base line y=640 — the same cap line the word is centred on. */
+interface SlideDef {
+  key: string;
+  word: string;
+  /** flood colour — always one of Altra's own brand colours */
+  bg: string;
+  /** text/UI ink on top of the flood (white on dark floods, charcoal on light) */
+  ink: string;
+  /** colour of the logo dot */
+  dot: string;
+  layout: Layout;
+  /** compact recomposition on the 640×700 mobile frame — everything fits */
+  mobile: Layout;
+}
+
 const SLIDE_DEFS: SlideDef[] = [
   {
     key: "chipsi",
     word: "Chipsi",
-    bg: "#E98E7E", // pastel ketchup-tomato red
-    heroW: 330,
-    floaters: [
-      { n: "chipsi-fry", x: 330, y: 190, w: 205, rot: -24 },
-      { n: "chipsi-egg", x: 1105, y: 400, w: 175, rot: 10 },
-      { n: "chipsi-ketchup", x: 230, y: 470, w: 160, rot: -12 },
-      { n: "chipsi-fry", x: 985, y: 580, w: 215, rot: 18, mirror: true },
-    ],
-    corners: [
-      { n: "chipsi-egg", x: -30, y: 590, w: 250, rot: -25 },
-      { n: "chipsi-ketchup", x: 1270, y: 25, w: 225, rot: 15 },
-    ],
+    bg: "#FF5C00", // Altra orange
+    ink: "#FFFFFF",
+    dot: "#FFF8F0",
+    layout: {
+      heroW: 330,
+      floaters: [
+        { n: "chipsi-fry", x: 330, y: 190, w: 205, rot: -24 },
+        { n: "chipsi-egg", x: 1105, y: 400, w: 175, rot: 10 },
+        { n: "chipsi-ketchup", x: 230, y: 470, w: 160, rot: -12 },
+        { n: "chipsi-fry", x: 985, y: 580, w: 215, rot: 18, mirror: true },
+      ],
+      corners: [
+        { n: "chipsi-egg", x: -30, y: 590, w: 250, rot: -25 },
+        { n: "chipsi-ketchup", x: 1270, y: 25, w: 225, rot: 15 },
+      ],
+    },
+    mobile: {
+      heroW: 225,
+      floaters: [
+        { n: "chipsi-fry", x: 84, y: 128, w: 118, rot: -24 },
+        { n: "chipsi-egg", x: 468, y: 250, w: 96, rot: 10 },
+        { n: "chipsi-ketchup", x: 58, y: 392, w: 92, rot: -12 },
+        { n: "chipsi-fry", x: 486, y: 468, w: 118, rot: 18, mirror: true },
+      ],
+      corners: [
+        { n: "chipsi-egg", x: -50, y: 540, w: 135, rot: -20 },
+        { n: "chipsi-ketchup", x: 552, y: 48, w: 120, rot: 12 },
+      ],
+    },
   },
   {
     key: "pilau",
     word: "Pilau",
-    bg: "#AFCA9B", // pastel cardamom green
-    heroW: 520,
-    floaters: [
-      { n: "pilau-star-anise", x: 355, y: 150, w: 125, rot: -15 },
-      { n: "pilau-cinnamon", x: 1005, y: 225, w: 195, rot: 8, mirror: true },
-      { n: "pilau-coriander", x: 280, y: 455, w: 120, rot: 12 },
-      { n: "pilau-star-anise", x: 985, y: 580, w: 115, rot: 25 },
-    ],
-    corners: [
-      { n: "pilau-cinnamon", x: -50, y: 595, w: 280, rot: -30 },
-      { n: "pilau-coriander", x: 1285, y: 50, w: 155, rot: 20 },
-    ],
+    bg: "#1A1A1A", // Altra charcoal
+    ink: "#FFF8F0",
+    dot: "#FF5C00",
+    layout: {
+      heroW: 520,
+      floaters: [
+        { n: "pilau-star-anise", x: 355, y: 150, w: 125, rot: -15 },
+        { n: "pilau-cinnamon", x: 1005, y: 225, w: 195, rot: 8, mirror: true },
+        { n: "pilau-coriander", x: 280, y: 455, w: 120, rot: 12 },
+        { n: "pilau-star-anise", x: 985, y: 580, w: 115, rot: 25 },
+      ],
+      corners: [
+        { n: "pilau-cinnamon", x: -50, y: 595, w: 280, rot: -30 },
+        { n: "pilau-coriander", x: 1285, y: 50, w: 155, rot: 20 },
+      ],
+    },
+    mobile: {
+      heroW: 380,
+      floaters: [
+        { n: "pilau-star-anise", x: 96, y: 150, w: 66, rot: -15 },
+        { n: "pilau-cinnamon", x: 470, y: 208, w: 108, rot: 8, mirror: true },
+        { n: "pilau-coriander", x: 78, y: 408, w: 72, rot: 12 },
+        { n: "pilau-star-anise", x: 486, y: 470, w: 64, rot: 25 },
+      ],
+      corners: [
+        { n: "pilau-cinnamon", x: -56, y: 545, w: 150, rot: -30 },
+        { n: "pilau-coriander", x: 560, y: 90, w: 92, rot: 20 },
+      ],
+    },
   },
   {
     key: "wali",
     word: "Wali",
-    bg: "#A8C3DE", // pastel denim blue
-    heroW: 400,
-    floaters: [
-      { n: "wali-tomato", x: 355, y: 170, w: 150, rot: -8 },
-      { n: "wali-tomato", x: 1075, y: 300, w: 125, rot: 15, mirror: true },
-      { n: "wali-onion", x: 275, y: 465, w: 135, rot: -18 },
-      { n: "wali-chili", x: 1150, y: 470, w: 135, rot: 24 },
-    ],
-    corners: [
-      { n: "wali-tomato", x: -25, y: 585, w: 235, rot: -15 },
-      { n: "wali-chili", x: 1290, y: 55, w: 175, rot: 30 },
-    ],
+    bg: "#FFF8F0", // Altra cream
+    ink: "#1A1A1A",
+    dot: "#FF5C00",
+    layout: {
+      heroW: 400,
+      floaters: [
+        { n: "wali-tomato", x: 355, y: 170, w: 150, rot: -8 },
+        { n: "wali-tomato", x: 1075, y: 300, w: 125, rot: 15, mirror: true },
+        { n: "wali-onion", x: 275, y: 465, w: 135, rot: -18 },
+        { n: "wali-chili", x: 1150, y: 470, w: 135, rot: 24 },
+      ],
+      corners: [
+        { n: "wali-tomato", x: -25, y: 585, w: 235, rot: -15 },
+        { n: "wali-chili", x: 1290, y: 55, w: 175, rot: 30 },
+      ],
+    },
+    mobile: {
+      heroW: 280,
+      floaters: [
+        { n: "wali-tomato", x: 104, y: 148, w: 86, rot: -8 },
+        { n: "wali-tomato", x: 486, y: 235, w: 72, rot: 15, mirror: true },
+        { n: "wali-onion", x: 82, y: 400, w: 88, rot: -18 },
+        { n: "wali-chili", x: 500, y: 420, w: 78, rot: 24 },
+      ],
+      corners: [
+        { n: "wali-tomato", x: -48, y: 528, w: 130, rot: -15 },
+        { n: "wali-chili", x: 556, y: 84, w: 96, rot: 30 },
+      ],
+    },
   },
   {
     key: "mishkaki",
     word: "Mishkaki",
-    bg: "#9CC0CE", // pastel charcoal-smoke teal
-    heroW: 480,
-    floaters: [
-      { n: "mishkaki-skewer", x: 340, y: 175, w: 190, rot: -20 },
-      { n: "mishkaki-lemon", x: 1085, y: 300, w: 135, rot: 12 },
-      { n: "mishkaki-pepper", x: 280, y: 465, w: 135, rot: -14 },
-      { n: "mishkaki-skewer", x: 990, y: 575, w: 175, rot: 20, mirror: true },
-    ],
-    corners: [
-      { n: "mishkaki-pepper", x: -30, y: 590, w: 240, rot: -25 },
-      { n: "mishkaki-lemon", x: 1285, y: 45, w: 180, rot: 28 },
-    ],
+    bg: "#FFD6C0", // Altra pink
+    ink: "#1A1A1A",
+    dot: "#FF5C00",
+    layout: {
+      heroW: 520,
+      floaters: [
+        { n: "mishkaki-skewer", x: 340, y: 175, w: 190, rot: -20 },
+        { n: "mishkaki-lemon", x: 1085, y: 300, w: 135, rot: 12 },
+        { n: "mishkaki-pepper", x: 280, y: 465, w: 135, rot: -14 },
+        { n: "mishkaki-skewer", x: 990, y: 575, w: 175, rot: 20, mirror: true },
+      ],
+      corners: [
+        { n: "mishkaki-pepper", x: -30, y: 590, w: 240, rot: -25 },
+        { n: "mishkaki-lemon", x: 1285, y: 45, w: 180, rot: 28 },
+      ],
+    },
+    mobile: {
+      heroW: 360,
+      floaters: [
+        { n: "mishkaki-skewer", x: 92, y: 140, w: 112, rot: -20 },
+        { n: "mishkaki-lemon", x: 492, y: 230, w: 82, rot: 12 },
+        { n: "mishkaki-pepper", x: 76, y: 400, w: 80, rot: -14 },
+        { n: "mishkaki-skewer", x: 494, y: 460, w: 104, rot: 20, mirror: true },
+      ],
+      corners: [
+        { n: "mishkaki-pepper", x: -52, y: 535, w: 135, rot: -25 },
+        { n: "mishkaki-lemon", x: 556, y: 70, w: 105, rot: 28 },
+      ],
+    },
   },
 ];
 
-/* A slide only ships when its hero cut-out has been generated */
 const SLIDES = SLIDE_DEFS.filter((s) => BUILT.has(`${s.key}-hero`));
 
-/* floor shadows — identical on every slide (design px: cx, cy, w, h) */
-const SHADOWS: [number, number, number, number][] = [
+/* floor shadows (design px: cx, cy, w, h) */
+const DESKTOP_SHADOWS: [number, number, number, number][] = [
   [345, 650, 170, 24],
   [720, 690, 340, 30],
   [1180, 638, 160, 22],
   [1000, 715, 150, 22],
+];
+const MOBILE_SHADOWS: [number, number, number, number][] = [
+  [320, 566, 240, 16],
+  [130, 560, 90, 10],
+  [512, 560, 90, 10],
 ];
 
 /* measured coverage table for the 970ms wipe (t → c, smoothstep between) */
@@ -170,15 +255,23 @@ function cover(t: number): number {
 }
 
 /* deterministic "random" bob timings (SSR-stable, no hydration mismatch) */
-function bobTiming(i: number) {
+function bobTiming(seed: number) {
   return {
-    dur: `${(3.2 + ((i * 37) % 18)) / 10}s`,
-    del: `-${((i * 53) % 40) / 10}s`,
+    dur: `${(3.2 + ((seed * 37) % 18)) / 10}s`,
+    del: `-${((seed * 53) % 40) / 10}s`,
   };
 }
 
 const img = (n: string) => `/images/food/slides/${n}.webp`;
-const factors = [0.4, 0.3, 0.15, 0.55, 0.75]; // word, shadow, bottle, fruit, corner
+const factors = [0.4, 0.3, 0.15, 0.55, 0.75]; // word, shadow, dish, fruit, corner
+
+/* desktop frame 1440×900, mobile frame 640×700 — both fully visible */
+const FW = { desktop: 1440, mobile: 640 };
+const FH = { desktop: 900, mobile: 700 };
+/* cap-line the word is centred on (design px) */
+const WORD_CENTER_Y = { desktop: 403.5, mobile: 330 };
+/* the dish base line (hero bottoms sit on it) */
+const HERO_BASE_Y = { desktop: 640, mobile: 560 };
 
 interface WordStyle {
   fontSize: string;
@@ -193,8 +286,7 @@ function displayFamily(): string {
   const v = getComputedStyle(document.documentElement)
     .getPropertyValue("--font-display")
     .trim();
-  const first = v.split(",")[0]?.trim();
-  return first || '"Playfair Display Variable"';
+  return v.split(",")[0]?.trim() || '"Playfair Display Variable"';
 }
 function inkWidth(word: string, lsPx100: number): number {
   if (!measureCtx) {
@@ -208,8 +300,7 @@ function inkWidth(word: string, lsPx100: number): number {
     ctx.letterSpacing = `${lsPx100}px`;
   }
   const m = ctx.measureText(word);
-  const ink =
-    (m.actualBoundingBoxLeft ?? 0) + (m.actualBoundingBoxRight ?? 0);
+  const ink = (m.actualBoundingBoxLeft ?? 0) + (m.actualBoundingBoxRight ?? 0);
   return ink > 0 ? ink : m.width;
 }
 
@@ -228,6 +319,7 @@ export function FlavourHero() {
 
   const [cur, setCur] = useState(0);
   const [ready, setReady] = useState(false);
+  const [mobile, setMobile] = useState(false);
   const [wordStyles, setWordStyles] = useState<(WordStyle | null)[]>(
     SLIDES.map(() => null),
   );
@@ -248,21 +340,37 @@ export function FlavourHero() {
     }
   };
 
-  /* ── sizing: --u, word fitting (desktop 97% cap / mobile 92% fit) ── */
+  /* ── sizing: --u/--fw/--fh + word fitting, desktop & mobile frames ── */
   useEffect(() => {
     const measure = () => {
       const st = stageRef.current;
       if (!st) return;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const mobile = vw <= 820 || vh > vw;
-      const u = mobile
-        ? Math.min(vw / 640, (vh - 200) / 620)
-        : Math.min(vw / 1440, vh / 900);
-      st.style.setProperty("--u", `${u}px`);
-      frameW.current = 1440 * u;
+      const isMobile = vw <= 820 || vh > vw;
+      setMobile(isMobile);
 
-      const target = mobile ? Math.min(1440, vw / u) * 0.92 : 1400;
+      let u: number;
+      if (isMobile) {
+        // compact 640×700 frame — never wider than the viewport, and
+        // never smaller than the plain fit-scale (odd sizes stay sane)
+        u = Math.max(
+          Math.min(vw / FW.mobile, (vh - 220) / FH.mobile),
+          Math.min(vw / FW.desktop, vh / FH.desktop),
+        );
+      } else {
+        u = Math.min(vw / FW.desktop, vh / FH.desktop);
+      }
+      st.style.setProperty("--u", `${u}px`);
+      st.style.setProperty("--fw", String(isMobile ? FW.mobile : FW.desktop));
+      st.style.setProperty("--fh", String(isMobile ? FH.mobile : FH.desktop));
+      frameW.current = (isMobile ? FW.mobile : FW.desktop) * u;
+
+      const designW = isMobile ? FW.mobile : FW.desktop;
+      const target = designW * 0.94;
+      const fMax = isMobile ? 230 : 445;
+      const yC = isMobile ? WORD_CENTER_Y.mobile : WORD_CENTER_Y.desktop;
+
       setWordStyles(
         SLIDES.map(({ word }) => {
           const ink = inkWidth(word, 0.5); // +0.005em at 100px
@@ -271,11 +379,11 @@ export function FlavourHero() {
           if (ink * 4.45 > 1330) {
             const inkTight = inkWidth(word, -3.5); // −0.035em at 100px
             ls = "-0.035em";
-            size = Math.min(445, (target / inkTight) * 100);
+            size = Math.min(fMax, (target / inkTight) * 100);
           } else {
-            size = 445;
+            size = fMax;
           }
-          const baseline = 403.5 + (0.698 * size) / 2;
+          const baseline = yC + (0.698 * size) / 2;
           const top = baseline - 0.85 * size;
           return {
             fontSize: `${(size * u).toFixed(2)}px`,
@@ -332,28 +440,20 @@ export function FlavourHero() {
     };
   }, []);
 
-  /* idle-preload the other slides' art so the first wipe never pops in */
+  /* idle-preload every slide's art so the first wipe never pops in */
   useEffect(() => {
     if (!ready) return;
-    const idle =
-      "requestIdleCallback" in window
-        ? (cb: () => void) => window.setTimeout(cb, 1200)
-        : (cb: () => void) => window.setTimeout(cb, 1200);
-    const handle = idle(() => {
+    const handle = window.setTimeout(() => {
       for (const s of SLIDES) {
-        const asset = `${s.key}-hero`;
-        if (!BUILT.has(asset)) continue;
-        const all = [asset, ...s.floaters.map((p) => p.n), ...s.corners.map((p) => p.n)];
-        for (const n of all) {
+        const all = [`${s.key}-hero`, ...s.layout.floaters.map((p) => p.n), ...s.layout.corners.map((p) => p.n)];
+        for (const n of new Set(all)) {
           if (!BUILT.has(n)) continue;
           const im = new Image();
           im.src = img(n);
         }
       }
-    });
-    return () => {
-      if (typeof handle === "number") window.clearTimeout(handle);
-    };
+    }, 1200);
+    return () => window.clearTimeout(handle);
   }, [ready]);
 
   /* keep slide visibility in sync outside transitions */
@@ -443,7 +543,6 @@ export function FlavourHero() {
   const goTo = useCallback(
     (idx: number) => {
       const dir: 1 | -1 = idx > curRef.current ? 1 : -1;
-      // wrap: choosing a tab left of a wrapped position still feels right
       go(idx, dir);
     },
     [go],
@@ -510,12 +609,15 @@ export function FlavourHero() {
     };
   }, [go]);
 
-  const renderPiece = (p: Piece, i: number, corner: boolean) => {
-    if (!BUILT.has(p.n)) return null; // asset not generated yet
+  const active = SLIDES[cur] ?? SLIDES[0];
+  const shadows = mobile ? MOBILE_SHADOWS : DESKTOP_SHADOWS;
+
+  const renderPiece = (p: Piece, seed: number, corner: boolean) => {
+    if (!BUILT.has(p.n)) return null;
     const d = DIMS[p.n];
     if (!d) return null;
     const h = (p.w * d.h) / d.w;
-    const t = bobTiming(i + p.x | 0);
+    const t = bobTiming(seed);
     return (
       <div
         key={`${p.n}-${p.x}-${p.y}`}
@@ -526,12 +628,10 @@ export function FlavourHero() {
           width: `${p.w}px`,
           height: `${h.toFixed(1)}px`,
           transform: p.mirror ? "scaleX(-1)" : undefined,
-          ["--u" as string]: undefined, // inherits from stage
         }}
       >
         <div
           className="al-piece"
-          data-bob
           style={{
             backgroundImage: `url(${img(p.n)})`,
             ["--rot" as string]: `${p.rot ?? 0}deg`,
@@ -543,6 +643,82 @@ export function FlavourHero() {
     );
   };
 
+  const renderLayout = (s: SlideDef, si: number) => {
+    const lay = mobile ? s.mobile : s.layout;
+    const d = DIMS[`${s.key}-hero`];
+    const hw = lay.heroW;
+    const hh = (hw * d.h) / d.w;
+    const hx = (mobile ? FW.mobile : FW.desktop) / 2 - hw / 2;
+    const hy = (mobile ? HERO_BASE_Y.mobile : HERO_BASE_Y.desktop) - hh;
+    const ws = wordStyles[si];
+    const wordShadow = s.ink === "#FFFFFF" || s.ink === "#FFF8F0"
+      ? "0 6px 60px rgba(0,0,0,0.10)"
+      : "none";
+    return (
+      <>
+        {/* word layer */}
+        <div className="al-layer" data-l>
+          <div
+            className="al-word"
+            aria-hidden="true"
+            style={{
+              fontSize: ws?.fontSize ?? "calc(445 * var(--u))",
+              top: ws?.top ?? "calc(181 * var(--u))",
+              letterSpacing: ws?.letterSpacing ?? "0.005em",
+              textShadow: wordShadow,
+            }}
+          >
+            {s.word}
+          </div>
+        </div>
+        {/* shadow layer */}
+        <div className="al-layer" data-l>
+          {shadows.map(([cx, cy, w, h]) => (
+            <div
+              key={`${cx}-${cy}`}
+              className="al-shadow"
+              style={{
+                left: `${cx - w / 2}px`,
+                top: `${cy - h / 2}px`,
+                width: `${w}px`,
+                height: `${h}px`,
+              }}
+            />
+          ))}
+        </div>
+        {/* dish layer */}
+        <div className="al-layer" data-l>
+          <div
+            className="al-piece-wrap"
+            style={{
+              left: `${hx}px`,
+              top: `${hy.toFixed(1)}px`,
+              width: `${hw}px`,
+              height: `${hh.toFixed(1)}px`,
+            }}
+          >
+            <div
+              className="al-piece"
+              style={{
+                backgroundImage: `url(${img(`${s.key}-hero`)})`,
+                ["--rot" as string]: "0deg",
+                filter: "drop-shadow(0 18px 30px rgba(40, 25, 10, 0.18))",
+              }}
+            />
+          </div>
+        </div>
+        {/* fruit layer */}
+        <div className="al-layer" data-l>
+          {lay.floaters.map((p, i) => renderPiece(p, i + p.x, false))}
+        </div>
+        {/* corner layer */}
+        <div className="al-layer" data-l>
+          {lay.corners.map((p, i) => renderPiece(p, i + 7 + p.y, true))}
+        </div>
+      </>
+    );
+  };
+
   return (
     <section className="relative h-svh overflow-hidden" aria-label="Altra flavour slider">
       <h1 className="sr-only">
@@ -551,96 +727,35 @@ export function FlavourHero() {
       <div
         ref={stageRef}
         className={`al-stage${ready ? " is-in" : ""}`}
-        style={{ background: SLIDES[0]?.bg }}
+        style={{
+          background: active.bg,
+          color: active.ink,
+          transition: "background-color 0.45s ease, color 0.45s ease",
+        }}
       >
-        {SLIDES.map((s, si) => {
-          const d = DIMS[`${s.key}-hero`];
-          const hw = s.heroW;
-          const hh = (hw * d.h) / d.w;
-          const hx = 720 - hw / 2;
-          const hy = 640 - hh;
-          const ws = wordStyles[si];
-          return (
-            <section
-              key={s.key}
-              ref={(el) => {
-                slideRefs.current[si] = el;
-              }}
-              className="al-slide"
-              data-state={si === 0 ? "current" : "hidden"}
-              style={{ background: s.bg }}
-              aria-hidden={si !== cur}
-            >
-              <div className="al-frame">
-                {/* word layer */}
-                <div className="al-layer" data-l>
-                  <div
-                    className="al-word"
-                    aria-hidden="true"
-                    style={{
-                      fontSize: ws?.fontSize ?? "calc(445 * var(--u))",
-                      top: ws?.top ?? "calc(181 * var(--u))",
-                      letterSpacing: ws?.letterSpacing ?? "0.005em",
-                      textShadow: "0 6px 60px rgba(0,0,0,0.10)",
-                    }}
-                  >
-                    {s.word}
-                  </div>
-                </div>
-                {/* shadow layer */}
-                <div className="al-layer" data-l>
-                  {SHADOWS.map(([cx, cy, w, h]) => (
-                    <div
-                      key={`${cx}-${cy}`}
-                      className="al-shadow"
-                      style={{
-                        left: `${cx - w / 2}px`,
-                        top: `${cy - h / 2}px`,
-                        width: `${w}px`,
-                        height: `${h}px`,
-                      }}
-                    />
-                  ))}
-                </div>
-                {/* bottle / dish layer */}
-                <div className="al-layer" data-l>
-                  <div
-                    className="al-piece-wrap"
-                    style={{
-                      left: `${hx}px`,
-                      top: `${hy.toFixed(1)}px`,
-                      width: `${hw}px`,
-                      height: `${hh.toFixed(1)}px`,
-                    }}
-                  >
-                    <div
-                      className="al-piece"
-                      style={{
-                        backgroundImage: `url(${img(`${s.key}-hero`)})`,
-                        ["--rot" as string]: "0deg",
-                        filter: "drop-shadow(0 18px 30px rgba(40, 25, 10, 0.18))",
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* fruit layer */}
-                <div className="al-layer" data-l>
-                  {s.floaters.map((p, i) => renderPiece(p, i, false))}
-                </div>
-                {/* corner layer */}
-                <div className="al-layer" data-l>
-                  {s.corners.map((p, i) => renderPiece(p, i + 7, true))}
-                </div>
-              </div>
-            </section>
-          );
-        })}
+        {SLIDES.map((s, si) => (
+          <section
+            key={s.key}
+            ref={(el) => {
+              slideRefs.current[si] = el;
+            }}
+            className="al-slide"
+            data-state={si === 0 ? "current" : "hidden"}
+            style={{ background: s.bg, color: s.ink }}
+            aria-hidden={si !== cur}
+          >
+            <div className="al-frame">{renderLayout(s, si)}</div>
+          </section>
+        ))}
 
-        {/* fixed UI */}
+        {/* fixed UI — ink follows the active slide's colour */}
         <div className="al-ui al-textshadow">
           <header className="al-head">
             <TransitionLink href="/" className="al-logo al-rise d1">
-              Altra<span className="dot">.</span>
+              Altra
+              <span className="dot" style={{ color: active.dot }}>
+                .
+              </span>
             </TransitionLink>
             <div className="al-account">
               <TransitionLink href="/menu" className="al-rise d3">
@@ -694,7 +809,7 @@ export function FlavourHero() {
               go((curRef.current - 1 + SLIDES.length) % SLIDES.length, -1);
             }}
           >
-            <svg viewBox="0 0 28 28" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M24 14H4" />
               <path d="M12 6l-8 8 8 8" />
             </svg>
@@ -708,7 +823,7 @@ export function FlavourHero() {
               go((curRef.current + 1) % SLIDES.length, 1);
             }}
           >
-            <svg viewBox="0 0 28 28" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M4 14h20" />
               <path d="M16 6l8 8-8 8" />
             </svg>
