@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Flame, Menu as MenuIcon, Moon, Sun, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -33,9 +34,14 @@ function Logo() {
 }
 
 export function Navbar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
+
+  // The home hero is a full-bleed flavour slider with its own on-canvas
+  // navigation — the global chrome would sit on top of the flood colour.
+  if (pathname === "/") return null;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);

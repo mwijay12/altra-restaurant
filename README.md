@@ -17,7 +17,7 @@
 
 ## Pages
 
-- **/** — FloatingFoodHero + video wash, crossing marquee strips, bento features with self-drawing SVG icons + scroll-drawn wave, pinned horizontal dish scroller, scroll-scrubbed "Watch us cook" video section, testimonial carousel, sticky CTA
+- **/** — FlavourHero full-viewport flavour slider (pastel flood colours, giant Playfair word behind the dish, bobbing cut-out food at parallax depths, measured 970ms panel-wipe transitions, autoplay/swipe/tabs) + crossing marquee strips, bento features with self-drawing SVG icons + scroll-drawn wave, pinned horizontal dish scroller, scroll-scrubbed "Watch us cook" video section, testimonial carousel
 - **/menu** — filterable animated dish grid (layout animations, TZS pricing)
 - **/about** — parallax brand story, count-up stats, values, CTA
 
@@ -44,7 +44,7 @@ app/
 components/
   ui/                   button, badge, magnetic, hero-section-7 (FloatingFoodHero)
   demo/                 hero-section-7-demo (content wiring for the hero)
-  sections/             navbar, hero, marquee, features, popular-dishes,
+  sections/             flavour-hero (full-viewport slider), navbar, hero (legacy), marquee, features, popular-dishes,
                         testimonials, sticky-cta, footer, menu-grid, about-content
   three/                (removed — particle field dropped for a cleaner hero)
   layout/               smooth-scroll (Lenis), transition-provider, transition-link
