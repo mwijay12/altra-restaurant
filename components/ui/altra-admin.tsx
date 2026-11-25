@@ -2,9 +2,12 @@
 
 import { useId, useState, type CSSProperties, type ReactNode, useEffect, useRef, type MouseEvent } from "react";
 
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Box, CircleDollarSign, Clock3, Download, Ellipsis, Eye, Filter, Flame, ListChecks, Search, ShieldCheck, ShoppingBag, TriangleAlert, Users, Zap, ArrowDownToLine, BarChart3, Bell, ChevronRight, Command, LayoutDashboard, Moon, Sun, TrendingUp, X, ChefHat } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Box, CircleDollarSign, Clock3, Download, Ellipsis, Eye, FileText, Filter, Flame, ListChecks, Search, ShieldCheck, ShoppingBag, TriangleAlert, Users, Zap, ArrowDownToLine, BarChart3, Bell, ChevronRight, Command, LayoutDashboard, Moon, Sun, TrendingUp, X, ChefHat } from "lucide-react";
 
 import { gsap, useGSAP } from "@/lib/gsap";
+
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import "@fontsource-variable/manrope";
 
@@ -505,7 +508,13 @@ const dashboardStyles = `
 .gd-footer a svg { width: 10px; height: 10px; }
 
 .gd-dialog {
+  /* Tailwind preflight resets margin to 0, which breaks the UA stylesheet's
+     dialog centering — restore it explicitly so the modal sits centered. */
+  position: fixed;
+  inset: 0;
+  margin: auto;
   max-inline-size: min(calc(100% - 26px), 485px); inline-size: 100%;
+  max-block-size: calc(100svh - 40px);
   border-radius: 23px; border: 1px solid var(--gd-rim); color: var(--gd-ink); padding: 0;
   background: var(--gd-surface); box-shadow: 0 20px 80px rgb(var(--gd-dark-shadow) / 38%);
 }
@@ -1005,10 +1014,11 @@ function AnalyticsMetrics({ period, trend }: { period: Period; trend?: boolean }
   </div>;
 }
 
-function AnalyticsView({ period, type, download }: {
+function AnalyticsView({ period, type, download, downloadPdf }: {
   period: Period;
   type: "trends" | "metrics";
   download: () => void;
+  downloadPdf: () => void;
 }) {
   const stats = analytics[period];
   const trend = type === "trends";
@@ -1034,6 +1044,7 @@ function AnalyticsView({ period, type, download }: {
       <div className="gd-approval-content"><span className="gd-list-icon"><Clock3 aria-hidden="true" /></span>
         <div><strong>Revenue and operating costs</strong><small>{period} · {stats.axis[0]} to {stats.axis.at(-1)}</small></div>
         <button type="button" className="gd-icon-button" aria-label="Download revenue and expense CSV" onClick={download}><Download aria-hidden="true" /></button>
+        <button type="button" className="gd-icon-button" aria-label="Download revenue and expense PDF" onClick={downloadPdf}><FileText aria-hidden="true" /></button>
       </div>
     </Panel> : <RecentOrders />}
   </div>;
@@ -1176,6 +1187,112 @@ function saveCsv(filename: string, rows: (string | number)[][]) {
   link.download = filename;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+/* ── Real PDF export (text-based, not a screenshot) ── */
+const PDF_ORANGE: [number, number, number] = [255, 92, 0];
+const PDF_CHARCOAL: [number, number, number] = [26, 26, 26];
+const PDF_MUTED: [number, number, number] = [110, 100, 90];
+
+function pdfHeader(doc: jsPDF, title: string, subtitle: string) {
+  // Altra brand bar
+  doc.setFillColor(...PDF_ORANGE);
+  doc.rect(0, 0, 210, 6, "F");
+  doc.setTextColor(...PDF_CHARCOAL);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.text("ALTRA", 14, 22);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...PDF_MUTED);
+  doc.text("Admin · Dar es Salaam", 14, 27.5);
+  doc.setTextColor(...PDF_CHARCOAL);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(15);
+  doc.text(title, 14, 40);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...PDF_MUTED);
+  doc.text(subtitle, 14, 46);
+  doc.text(`Generated ${new Date().toLocaleString("en-GB")}`, 14, 51);
+  doc.setTextColor(...PDF_CHARCOAL);
+  return 58;
+}
+
+function pdfFooter(doc: jsPDF) {
+  const pages = doc.getNumberOfPages();
+  doc.setFontSize(8);
+  doc.setTextColor(...PDF_MUTED);
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.text(`Altra Admin — page ${i} of ${pages}`, 14, 287);
+    doc.text("altra-restaurant.vercel.app/admin", 196, 287, { align: "right" });
+  }
+}
+
+function saveTrendsPdf(period: Period) {
+  const stats = analytics[period];
+  const doc = new jsPDF();
+  let y = pdfHeader(doc, "Revenue & Costs Report", `Period: ${period} · ${stats.axis[0]} to ${stats.axis.at(-1)}`);
+
+  const totalRev = stats.collected.reduce((a, b) => a + b, 0);
+  const totalCost = stats.costs.reduce((a, b) => a + b, 0);
+  const net = totalRev - totalCost;
+  const margin = totalRev ? ((net / totalRev) * 100).toFixed(1) : "0.0";
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("Summary", 14, y + 4);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  const summary = [
+    `Total revenue: ${tzs(totalRev)}`,
+    `Total operating costs: ${tzs(totalCost)}`,
+    `Net revenue: ${tzs(net)}`,
+    `Operating margin: ${margin}%`,
+  ];
+  summary.forEach((line, i) => doc.text(line, 14, y + 11 + i * 5.5));
+  y += 11 + summary.length * 5.5 + 6;
+
+  autoTable(doc, {
+    startY: y,
+    head: [["Date", "Revenue (TZS)", "Operating costs (TZS)", "Net (TZS)"]],
+    body: stats.axis.map((label, i) => [
+      label,
+      tzs(stats.collected[i]),
+      tzs(stats.costs[i]),
+      tzs(stats.collected[i] - stats.costs[i]),
+    ]),
+    foot: [["Total", tzs(totalRev), tzs(totalCost), tzs(net)]],
+    styles: { fontSize: 9, cellPadding: 3 },
+    headStyles: { fillColor: PDF_ORANGE, textColor: 255, fontStyle: "bold" },
+    footStyles: { fillColor: [255, 214, 192], textColor: PDF_CHARCOAL, fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [255, 248, 240] },
+  });
+  pdfFooter(doc);
+  doc.save(`altra-trends-${period.replace(" ", "-")}.pdf`);
+}
+
+function saveOperationsPdf(work: WorkItem[]) {
+  const doc = new jsPDF();
+  const y = pdfHeader(doc, "Kitchen Operations Report", `${work.length} active work items`);
+  const review = work.filter(item => item.status === "Needs review").length;
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Needs approval: ${review} · Stations: ${new Set(work.map(i => i.tool)).size}`, 14, y + 4);
+
+  autoTable(doc, {
+    startY: y + 10,
+    head: [["ID", "Task", "Station", "Owner", "Status", "Time"]],
+    body: work.map(item => [item.id, item.name, item.tool, item.owner, item.status, item.timestamp]),
+    styles: { fontSize: 8.5, cellPadding: 3 },
+    headStyles: { fillColor: PDF_ORANGE, textColor: 255, fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [255, 248, 240] },
+    columnStyles: { 1: { cellWidth: 62 } },
+  });
+  pdfFooter(doc);
+  doc.save("altra-operations.pdf");
 }
 
 function Dock({ active, side = false, select }: {
@@ -1401,14 +1518,19 @@ function AltraAdmin({
                 {view !== "operations" && <div className="gd-period" role="group" aria-label="Reporting period">
                   {periods.map(item => <button type="button" key={item} aria-pressed={item === period} onClick={() => setPeriod(item)}>{item}</button>)}
                 </div>}
-                {(view === "operations" || view === "trends") && <button type="button" className="gd-primary gd-export" onClick={view === "operations" ? downloadWork : downloadReport}>
-                  <ArrowDownToLine aria-hidden="true" />Export CSV
-                </button>}
+                {(view === "operations" || view === "trends") && <>
+                  <button type="button" className="gd-secondary gd-export" onClick={view === "operations" ? downloadWork : downloadReport}>
+                    <ArrowDownToLine aria-hidden="true" />CSV
+                  </button>
+                  <button type="button" className="gd-primary gd-export" onClick={view === "operations" ? () => saveOperationsPdf(work) : () => saveTrendsPdf(period)}>
+                    <ArrowDownToLine aria-hidden="true" />PDF
+                  </button>
+                </>}
               </div>
             </header>
             <div className="gd-content" ref={content} key={view} data-view={view}>
               {view === "command" && <CommandView period={period} open={selectView} />}
-              {(view === "trends" || view === "metrics") && <AnalyticsView period={period} type={view} download={downloadReport} />}
+              {(view === "trends" || view === "metrics") && <AnalyticsView period={period} type={view} download={downloadReport} downloadPdf={() => saveTrendsPdf(period)} />}
               {view === "operations" && <OperationsView work={work} inspect={inspect} />}
             </div>
           </div>
