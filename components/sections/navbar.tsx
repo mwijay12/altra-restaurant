@@ -39,10 +39,6 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
 
-  // The home hero is a full-bleed flavour slider with its own on-canvas
-  // navigation — the global chrome would sit on top of the flood colour.
-  if (pathname === "/") return null;
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -61,6 +57,13 @@ export function Navbar() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  // The home hero is a full-bleed flavour slider with its own on-canvas
+  // navigation — the global chrome would sit on top of the flood colour.
+  // NOTE: this MUST stay after every hook — Navbar lives in the root
+  // layout, so a conditional return above any hook breaks the hook order
+  // across route changes (React "rendered fewer hooks" crash).
+  if (pathname === "/") return null;
 
   const toggleTheme = () => {
     const next = !dark;

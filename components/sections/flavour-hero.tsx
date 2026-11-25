@@ -177,7 +177,7 @@ function bobTiming(i: number) {
   };
 }
 
-const img = (n: string) => `/images/food/slides/${n}.png`;
+const img = (n: string) => `/images/food/slides/${n}.webp`;
 const factors = [0.4, 0.3, 0.15, 0.55, 0.75]; // word, shadow, bottle, fruit, corner
 
 interface WordStyle {
@@ -189,10 +189,12 @@ interface WordStyle {
 let measureCtx: CanvasRenderingContext2D | null = null;
 function displayFamily(): string {
   if (typeof window === "undefined") return '"Playfair Display Variable"';
+  // --font-display holds a full stack; canvas + fonts.load want ONE family
   const v = getComputedStyle(document.documentElement)
     .getPropertyValue("--font-display")
     .trim();
-  return v || '"Playfair Display Variable"';
+  const first = v.split(",")[0]?.trim();
+  return first || '"Playfair Display Variable"';
 }
 function inkWidth(word: string, lsPx100: number): number {
   if (!measureCtx) {
@@ -312,9 +314,11 @@ export function FlavourHero() {
     const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
     if (fonts) {
       Promise.all([
-        fonts.load(`700 100px ${displayFamily()}`),
+        fonts.load(`700 100px ${displayFamily()}`).catch(() => []),
         fonts.ready,
-      ]).then(reveal);
+      ])
+        .then(reveal)
+        .catch(reveal);
     } else {
       reveal();
     }
@@ -327,6 +331,30 @@ export function FlavourHero() {
       cancelAnimationFrame(raf);
     };
   }, []);
+
+  /* idle-preload the other slides' art so the first wipe never pops in */
+  useEffect(() => {
+    if (!ready) return;
+    const idle =
+      "requestIdleCallback" in window
+        ? (cb: () => void) => window.setTimeout(cb, 1200)
+        : (cb: () => void) => window.setTimeout(cb, 1200);
+    const handle = idle(() => {
+      for (const s of SLIDES) {
+        const asset = `${s.key}-hero`;
+        if (!BUILT.has(asset)) continue;
+        const all = [asset, ...s.floaters.map((p) => p.n), ...s.corners.map((p) => p.n)];
+        for (const n of all) {
+          if (!BUILT.has(n)) continue;
+          const im = new Image();
+          im.src = img(n);
+        }
+      }
+    });
+    return () => {
+      if (typeof handle === "number") window.clearTimeout(handle);
+    };
+  }, [ready]);
 
   /* keep slide visibility in sync outside transitions */
   useEffect(() => {
