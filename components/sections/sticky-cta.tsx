@@ -29,7 +29,7 @@ export function StickyCTA() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 140, opacity: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 26 }}
-          className="fixed bottom-4 left-4 right-4 z-40 md:bottom-6 md:left-auto md:right-6 md:max-w-md"
+          className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] left-4 right-4 z-40 md:bottom-6 md:left-auto md:right-6 md:max-w-md"
         >
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-orange via-[#ff8a3d] to-pink bg-[length:200%_200%] p-5 shadow-2xl shadow-orange/30 animate-gradient">
             <div className="flex items-center gap-4">

@@ -39,7 +39,7 @@ export function Testimonials() {
           <Badge className="border-accent/40 bg-accent/15 text-orange">
             Wall of love
           </Badge>
-          <h2 className="mt-5 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+          <h2 className="mt-5 font-display text-[clamp(1.95rem,4.6vw,3.25rem)] font-semibold tracking-tight">
             Dar es Salaam is talking<span className="text-accent">.</span>
           </h2>
         </div>
@@ -58,7 +58,7 @@ export function Testimonials() {
               <SwiperSlide key={t.name}>
                 <figure className="flex min-h-[260px] flex-col items-center justify-center text-center">
                   <Quote aria-hidden="true" className="mb-6 size-8 text-orange" />
-                  <blockquote className="text-balance font-display text-2xl leading-snug sm:text-3xl">
+                  <blockquote className="text-balance font-display text-[clamp(1.3rem,2.8vw,1.875rem)] leading-snug">
                     &ldquo;{t.quote}&rdquo;
                   </blockquote>
                   <figcaption className="mt-8 flex items-center justify-center gap-3">

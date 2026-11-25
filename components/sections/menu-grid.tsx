@@ -22,7 +22,7 @@ export function MenuGrid() {
     <section className="mx-auto max-w-7xl px-6 pb-24 pt-32 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">
         <Badge>The Menu</Badge>
-        <h1 className="mt-5 font-display text-5xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
+        <h1 className="mt-5 font-display text-[clamp(2.6rem,7vw,5.5rem)] font-semibold tracking-tight">
           Pick your craving<span className="text-accent">.</span>
         </h1>
         <p className="mt-4 text-muted-foreground">
@@ -104,7 +104,7 @@ export function MenuGrid() {
                 </div>
                 <button
                   aria-label={`Add ${dish.name} to cart`}
-                  className="mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/25 transition-transform duration-300 hover:scale-110"
+                  className="mt-1 grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/25 transition-transform duration-300 hover:scale-110"
                 >
                   <Plus className="size-5" />
                 </button>

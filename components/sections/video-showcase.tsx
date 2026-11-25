@@ -18,7 +18,7 @@ export function VideoShowcase() {
       tone="light"
     >
       <Badge>From our kitchens</Badge>
-      <h2 className="mt-6 font-display text-5xl font-semibold text-charcoal sm:text-6xl md:text-7xl">
+      <h2 className="mt-6 font-display text-[clamp(2.5rem,7vw,5.25rem)] font-semibold text-charcoal">
         Watch us cook<span className="text-accent">.</span>
       </h2>
       <p className="mt-4 max-w-md text-charcoal/70">

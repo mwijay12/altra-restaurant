@@ -152,7 +152,7 @@ export function FloatingFoodHero({
 
       <h1
         data-hero-title
-        className="relative z-10 mt-6 max-w-5xl text-balance text-center font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl"
+        className="relative z-10 mt-6 max-w-5xl text-balance text-center font-display text-[clamp(2.75rem,7.2vw,6.75rem)] font-semibold leading-[1.04] tracking-tight"
       >
         {title}
       </h1>
@@ -167,12 +167,12 @@ export function FloatingFoodHero({
       {primaryAction || secondaryAction ? (
         <div
           data-hero-actions
-          className="relative z-10 mt-10 flex flex-wrap items-center justify-center gap-4"
+          className="relative z-10 mt-10 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center sm:gap-4"
         >
           {primaryAction ? (
-            <Magnetic>
-              <TransitionLink href={primaryAction.href}>
-                <Button size="lg" className="group">
+            <Magnetic className="w-full sm:w-auto">
+              <TransitionLink href={primaryAction.href} className="block w-full sm:w-auto">
+                <Button size="lg" className="group w-full sm:w-auto">
                   {primaryAction.label}
                   <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
@@ -180,8 +180,8 @@ export function FloatingFoodHero({
             </Magnetic>
           ) : null}
           {secondaryAction ? (
-            <TransitionLink href={secondaryAction.href}>
-              <Button size="lg" variant="outline">
+            <TransitionLink href={secondaryAction.href} className="block w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
                 {secondaryAction.label}
               </Button>
             </TransitionLink>

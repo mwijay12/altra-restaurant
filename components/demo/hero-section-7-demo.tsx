@@ -17,7 +17,7 @@ const heroImages: FloatingImageProps[] = [
     width: 341,
     height: 262,
     className:
-      "w-44 sm:w-60 md:w-80 top-[13%] left-[-6%] md:top-[14%] md:left-[4%] -rotate-6",
+      "w-36 sm:w-56 md:w-80 top-[11%] left-[-8%] md:top-[14%] md:left-[4%] -rotate-6",
   },
   {
     src: "/images/food/pizza.png",
@@ -25,7 +25,7 @@ const heroImages: FloatingImageProps[] = [
     width: 620,
     height: 717,
     className:
-      "w-24 sm:w-32 md:w-44 top-[7%] right-[2%] md:top-[10%] md:right-[10%] rotate-[14deg]",
+      "w-24 sm:w-32 md:w-44 top-[6%] right-[1%] md:top-[10%] md:right-[10%] rotate-[14deg]",
   },
   {
     src: "/images/food/taco.png",
@@ -33,7 +33,7 @@ const heroImages: FloatingImageProps[] = [
     width: 431,
     height: 318,
     className:
-      "w-32 sm:w-44 md:w-60 bottom-[9%] right-[-4%] md:bottom-[12%] md:right-[4%] -rotate-6",
+      "w-32 sm:w-44 md:w-60 bottom-[8%] right-[-5%] md:bottom-[12%] md:right-[4%] -rotate-6",
   },
   {
     src: "/images/food/sushi.png",
@@ -41,7 +41,7 @@ const heroImages: FloatingImageProps[] = [
     width: 222,
     height: 212,
     className:
-      "w-20 sm:w-28 md:w-40 bottom-[13%] left-[1%] md:bottom-[15%] md:left-[7%] rotate-3",
+      "w-20 sm:w-28 md:w-40 bottom-[12%] left-[0%] md:bottom-[15%] md:left-[7%] rotate-3",
   },
   {
     src: "/images/food/basil.png",
@@ -49,15 +49,15 @@ const heroImages: FloatingImageProps[] = [
     width: 236,
     height: 263,
     className:
-      "w-12 sm:w-16 md:w-24 top-[20%] left-[26%] md:left-[24%] rotate-12",
+      "w-12 sm:w-16 md:w-24 top-[18%] left-[24%] rotate-12",
   },
   {
+    // purely decorative on larger screens only — keeps mobile copy clear
     src: "/images/food/basil.png",
     alt: "Fresh basil leaves cutout",
     width: 236,
     height: 263,
-    className:
-      "w-10 sm:w-12 md:w-16 bottom-[28%] right-[24%] -rotate-12",
+    className: "hidden md:block w-16 bottom-[28%] right-[24%] -rotate-12",
   },
 ];
 

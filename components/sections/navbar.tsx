@@ -172,7 +172,7 @@ export function Navbar() {
                 </TransitionLink>
               </motion.div>
             </div>
-            <p className="px-8 pb-10 text-sm text-accent-foreground/70">
+            <p className="px-8 pb-[max(2.5rem,env(safe-area-inset-bottom))] text-sm text-accent-foreground/70">
               Dar es Salaam · Free delivery on first order
             </p>
           </motion.div>

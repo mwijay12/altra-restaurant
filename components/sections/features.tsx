@@ -86,7 +86,7 @@ export function Features() {
     <div ref={scope} className="mx-auto max-w-6xl px-6 py-24">
       <div data-feature-heading className="mx-auto max-w-2xl text-center">
         <Badge>Why Altra</Badge>
-        <h2 className="mt-5 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h2 className="mt-5 font-display text-[clamp(1.95rem,4.6vw,3.25rem)] font-semibold tracking-tight">
           Built for hunger. Designed for speed<span className="text-accent">.</span>
         </h2>
         <p className="mt-4 text-muted-foreground">

@@ -148,7 +148,7 @@ export function AboutSections() {
       <section className="mx-auto max-w-4xl px-6 pt-32 text-center lg:px-8">
         <div data-about-intro className="flex flex-col items-center">
           <Badge>Since 2023 · Dar es Salaam</Badge>
-          <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+          <h1 className="mt-6 font-display text-[clamp(2.5rem,6.5vw,5.5rem)] font-semibold leading-[1.05] tracking-tight">
             We don&rsquo;t deliver food. We deliver{" "}
             <em className="text-accent">the good part</em> of your day.
           </h1>
@@ -177,7 +177,7 @@ export function AboutSections() {
       <section className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div data-reveal>
-            <h2 className="font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+            <h2 className="font-display text-[clamp(1.95rem,4.6vw,3.25rem)] font-semibold tracking-tight">
               Born on two wheels<span className="text-accent">.</span>
             </h2>
             <p className="mt-6 leading-relaxed text-muted-foreground">
@@ -238,7 +238,7 @@ export function AboutSections() {
       <section className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
         <div data-reveal className="mx-auto max-w-2xl text-center">
           <Badge>What we stand for</Badge>
-          <h2 className="mt-5 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+          <h2 className="mt-5 font-display text-[clamp(1.95rem,4.6vw,3.25rem)] font-semibold tracking-tight">
             Three rules we never break<span className="text-accent">.</span>
           </h2>
         </div>
@@ -277,7 +277,7 @@ export function AboutSections() {
             aria-hidden="true"
             className="absolute -bottom-24 -right-24 size-80 rounded-full bg-pink/20 blur-3xl"
           />
-          <h2 className="relative font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+          <h2 className="relative font-display text-[clamp(1.95rem,4.6vw,3.25rem)] font-semibold tracking-tight">
             Taste what Dar is raving about<span className="text-accent">.</span>
           </h2>
           <p className="relative mx-auto mt-4 max-w-md text-cream/70">

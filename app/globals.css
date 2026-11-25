@@ -101,11 +101,17 @@
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--accent) 60%, transparent)
       transparent;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply bg-background font-sans text-foreground antialiased;
     text-rendering: optimizeLegibility;
+    /* hard guard against accidental horizontal pan on small screens
+       (clip keeps position: sticky/fixed working, unlike hidden) */
+    overflow-x: clip;
+    /* kill the 300ms double-tap-zoom delay on interactive elements */
+    touch-action: manipulation;
   }
 
   ::selection {

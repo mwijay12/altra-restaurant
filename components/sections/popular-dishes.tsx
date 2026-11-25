@@ -76,7 +76,7 @@ function DishCard({ dish, className }: { dish: Dish; className?: string }) {
         </div>
         <button
           aria-label={`Add ${dish.name} to cart`}
-          className="mt-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/25 transition-transform duration-300 hover:scale-110"
+          className="mt-1 grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/25 transition-transform duration-300 hover:scale-110"
         >
           <Plus className="size-5" />
         </button>
@@ -168,7 +168,7 @@ export function PopularDishes({
       >
         <div>
           <Badge>{eyebrow}</Badge>
-          <h2 className="mt-5 font-display text-4xl font-semibold tracking-tight sm:text-5xl">
+          <h2 className="mt-5 font-display text-[clamp(1.95rem,4.6vw,3.25rem)] font-semibold tracking-tight">
             {title}
             <span className="text-accent">.</span>
           </h2>
@@ -185,7 +185,7 @@ export function PopularDishes({
       <div className="mt-12 md:mt-14">
         <div
           ref={trackRef}
-          className="no-scrollbar flex w-max snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 md:overflow-visible md:px-10"
+          className="no-scrollbar flex w-max snap-x snap-mandatory gap-6 overflow-x-auto scroll-pl-6 px-6 pb-4 md:overflow-visible md:px-10"
         >
           {dishes.map((dish) => (
             <div key={dish.id} data-dish-card>
