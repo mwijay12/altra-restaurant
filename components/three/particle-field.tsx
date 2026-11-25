@@ -89,7 +89,10 @@ export default function ParticleField() {
   }, []);
 
   return (
-    <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 z-[1] overflow-hidden"
+    >
       <Canvas
         camera={{ position: [0, 0, 6], fov: 60 }}
         dpr={[1, 1.5]}

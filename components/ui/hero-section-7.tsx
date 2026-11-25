@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,13 +13,22 @@ import { TransitionLink } from "@/components/layout/transition-link";
  *
  * Props contract (per the integration guide):
  *  - title, description, images[], className
+ *  - videoSrc / videoPoster: optional cinematic background video wash
  * Optional extras: eyebrow + primary/secondary actions.
+ *
+ * `images` are transparent PNG cutouts: `className` carries position,
+ * size and a static Tailwind rotation; the component applies the float
+ * animation on a nested wrapper so GSAP intro transforms never clash
+ * with the CSS keyframes.
  */
 export interface FloatingImageProps {
   src: string;
   alt: string;
-  /** Tailwind classes for position + size + animation, e.g. "w-40 top-10 left-4 animate-float" */
+  /** Tailwind classes for position + size + rotation, e.g. "w-40 top-10 left-4 -rotate-6" */
   className?: string;
+  /** Intrinsic pixel dimensions of the cutout (for next/image CLS) */
+  width: number;
+  height: number;
 }
 
 export interface FloatingFoodHeroProps {
@@ -27,6 +37,8 @@ export interface FloatingFoodHeroProps {
   images: FloatingImageProps[];
   className?: string;
   eyebrow?: string;
+  videoSrc?: string;
+  videoPoster?: string;
   primaryAction?: { label: string; href: string };
   secondaryAction?: { label: string; href: string };
 }
@@ -37,9 +49,28 @@ export function FloatingFoodHero({
   images,
   className,
   eyebrow,
+  videoSrc,
+  videoPoster,
   primaryAction,
   secondaryAction,
 }: FloatingFoodHeroProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Respect prefers-reduced-motion: freeze the background video on its poster.
+  useEffect(() => {
+    if (!videoSrc) return;
+    const video = videoRef.current;
+    if (!video) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      video.pause();
+      try {
+        video.currentTime = 0;
+      } catch {
+        // poster frame is fine
+      }
+    }
+  }, [videoSrc]);
+
   return (
     <section
       className={cn(
@@ -47,30 +78,59 @@ export function FloatingFoodHero({
         className,
       )}
     >
+      {/* ── Background video wash ── */}
+      {videoSrc ? (
+        <div aria-hidden="true" className="absolute inset-0 z-0">
+          <video
+            ref={videoRef}
+            className="h-full w-full object-cover opacity-[0.16] dark:opacity-10"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster={videoPoster}
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+          {/* readability overlay — keeps the cream/dark theme on top */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/75 via-background/45 to-background/75 dark:from-background/80 dark:via-background/60 dark:to-background/80" />
+        </div>
+      ) : null}
+
       {/* Ambient glows */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1]"
+      >
         <div className="absolute -left-32 -top-32 size-[28rem] rounded-full bg-orange/15 blur-3xl" />
         <div className="absolute -right-24 top-1/3 size-[26rem] rounded-full bg-pink/50 blur-3xl dark:bg-pink/10" />
         <div className="absolute bottom-0 left-1/3 size-72 rounded-full bg-orange/10 blur-3xl" />
       </div>
 
-      {/* Floating imagery (painted underneath the copy) */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+      {/* Floating food cutouts (transparent PNGs, painted under the copy) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[2]"
+      >
         {images.map((image, i) => (
           <div
             key={`${image.src}-${i}`}
             data-float-img
-            className={cn("absolute animate-float", image.className)}
-            style={{ animationDelay: `${(i * 0.45).toFixed(2)}s` }}
+            className={cn("absolute drop-shadow-2xl", image.className)}
           >
-            <div className="relative aspect-square w-full overflow-hidden rounded-full shadow-2xl shadow-orange/25 ring-4 ring-white/70 dark:ring-white/10">
+            <div
+              className="animate-float"
+              style={{ animationDelay: `${(i * 0.45).toFixed(2)}s` }}
+            >
               <Image
                 src={image.src}
                 alt={image.alt}
-                fill
+                width={image.width}
+                height={image.height}
                 priority={i < 2}
-                sizes="(max-width: 640px) 120px, (max-width: 768px) 220px, 300px"
-                className="object-cover"
+                sizes="(max-width: 640px) 180px, (max-width: 768px) 260px, 380px"
+                className="h-auto w-full object-contain"
               />
             </div>
           </div>
@@ -80,7 +140,7 @@ export function FloatingFoodHero({
       {eyebrow ? (
         <span
           data-hero-eyebrow
-          className="inline-flex items-center gap-2.5 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-accent"
+          className="relative z-10 inline-flex items-center gap-2.5 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-accent backdrop-blur-sm"
         >
           <span className="relative flex size-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
@@ -92,14 +152,14 @@ export function FloatingFoodHero({
 
       <h1
         data-hero-title
-        className="mt-6 max-w-5xl text-balance text-center font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl"
+        className="relative z-10 mt-6 max-w-5xl text-balance text-center font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl"
       >
         {title}
       </h1>
 
       <p
         data-hero-description
-        className="mt-6 max-w-xl text-balance text-center text-base leading-relaxed text-muted-foreground sm:text-lg"
+        className="relative z-10 mt-6 max-w-xl text-balance text-center text-base leading-relaxed text-muted-foreground sm:text-lg"
       >
         {description}
       </p>
@@ -107,7 +167,7 @@ export function FloatingFoodHero({
       {primaryAction || secondaryAction ? (
         <div
           data-hero-actions
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          className="relative z-10 mt-10 flex flex-wrap items-center justify-center gap-4"
         >
           {primaryAction ? (
             <Magnetic>
@@ -131,7 +191,7 @@ export function FloatingFoodHero({
 
       <div
         data-hero-scroll
-        className="absolute bottom-8 flex flex-col items-center gap-2 text-muted-foreground"
+        className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-muted-foreground"
       >
         <span className="text-[10px] font-semibold uppercase tracking-[0.22em]">
           Scroll

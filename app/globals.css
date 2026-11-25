@@ -62,8 +62,8 @@
   --font-display: "Playfair Display Variable", "Playfair Display", Georgia,
     serif;
 
-  --animate-float: float 3.2s ease-in-out infinite;
-  --animate-float-slow: float 5.5s ease-in-out infinite;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-float-slow: float 6.5s ease-in-out infinite;
   --animate-gradient: gradient-shift 8s ease infinite;
   --animate-spin-slow: spin 14s linear infinite;
 }
@@ -71,10 +71,13 @@
 @keyframes float {
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
-  50% {
-    transform: translateY(-20px);
+  33% {
+    transform: translateY(-14px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(-7px) rotate(-1.5deg);
   }
 }
 

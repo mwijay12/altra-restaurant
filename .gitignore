@@ -29,3 +29,6 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# scratch assets (untracked working files)
+/image-search/
