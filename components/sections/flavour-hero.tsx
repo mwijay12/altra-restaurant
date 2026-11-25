@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { TransitionLink } from "@/components/layout/transition-link";
 
@@ -438,7 +438,7 @@ export function FlavourHero() {
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [SLIDES]);
 
   /* idle-preload every slide's art so the first wipe never pops in */
   useEffect(() => {

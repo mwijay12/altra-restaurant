@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type SVGProps } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowRight, Check, Flame } from "lucide-react";
 import { TransitionLink } from "@/components/layout/transition-link";
 
@@ -44,7 +45,11 @@ const exploreLinks = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
   const [subscribed, setSubscribed] = useState(false);
+
+  // The admin workspace is full-viewport — no site chrome there.
+  if (pathname === "/admin") return null;
 
   return (
     <footer className="bg-charcoal text-cream">
