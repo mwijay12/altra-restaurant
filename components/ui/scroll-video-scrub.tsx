@@ -160,7 +160,7 @@ export function ScrollVideoScrub({
           "absolute inset-0",
           tone === "dark"
             ? "bg-gradient-to-b from-charcoal/55 via-charcoal/25 to-charcoal/65"
-            : "bg-gradient-to-b from-background/55 via-transparent to-background/60",
+            : "bg-gradient-to-b from-[#fff8f0]/70 via-[#fff8f0]/5 to-[#fff8f0]/65",
         )}
       />
       <div
