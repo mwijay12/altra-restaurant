@@ -333,10 +333,10 @@ useEffect(() => {
           style={{ background: "linear-gradient(135deg, #fff8f0 0%, #ffead9 48%, #fff4e8 100%)" }}
         >
             <div className="absolute inset-0 z-0 opacity-90"><GradientBackground /></div>
-            <fieldset disabled={modalStatus !== 'closed'} className="relative z-10 flex w-full max-w-sm flex-col items-center gap-8 mx-4 rounded-[2rem] border border-white/80 bg-white/55 p-6 shadow-[0_24px_80px_rgba(113,69,37,0.14)] backdrop-blur-2xl sm:p-8">
+            <fieldset disabled={modalStatus !== 'closed'} className="relative z-10 mx-auto flex w-[calc(100%-2rem)] max-w-[30rem] flex-col items-center gap-7 rounded-[2rem] border border-white/80 bg-white/55 p-6 shadow-[0_24px_80px_rgba(113,69,37,0.14)] backdrop-blur-2xl sm:max-w-[32rem] sm:gap-8 sm:p-8 md:max-w-[34rem] md:gap-9 md:p-10">
                 <AnimatePresence mode="wait">
                     {authStep === "email" && <motion.div key="email-content" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center gap-4">
-                        <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-[clamp(2rem,8vw,3.75rem)] sm:text-5xl md:text-6xl leading-tight tracking-tight text-foreground">Admin sign in</p></div></BlurFade>
+                        <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="whitespace-nowrap font-serif font-light text-[clamp(2rem,5vw,3.5rem)] leading-tight tracking-tight text-foreground sm:text-5xl md:text-6xl">Admin sign in</p></div></BlurFade>
                         <BlurFade delay={0.25 * 2}><p className="text-sm font-medium text-muted-foreground">Demo access to the Altra workspace</p></BlurFade>
                         <BlurFade delay={0.25 * 3}><div className="flex items-center justify-center gap-4 w-full">
                             <GlassButton contentClassName="flex items-center justify-center gap-2" size="sm" onClick={onGoogleLogin}><GoogleIcon /><span className="font-semibold text-foreground">Google · Owner demo</span></GlassButton>
@@ -355,7 +355,7 @@ useEffect(() => {
                     </motion.div>}
                 </AnimatePresence>
 
-                <form onSubmit={handleFinalSubmit} className="w-full max-w-[300px] space-y-6">
+                <form onSubmit={handleFinalSubmit} className="w-full max-w-[360px] space-y-6">
                      <AnimatePresence>
                         {authStep !== 'confirmPassword' && <motion.div key="email-password-fields" exit={{ opacity: 0, filter: 'blur(4px)' }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full space-y-6">
                             <BlurFade delay={authStep === 'email' ? 0.25 * 7 : 0} inView={true} className="w-full">
