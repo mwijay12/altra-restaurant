@@ -1,0 +1,386 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  --background: #fff8f0; /* warm cream   */
+  --foreground: #1a1a1a; /* deep charcoal */
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --muted: #f5ece2;
+  --muted-foreground: #6f6459;
+  --accent: #ff5c00; /* vibrant orange */
+  --accent-foreground: #fff8f0;
+  --border: #ecdfd0;
+  --input: #ecdfd0;
+  --ring: #ff5c00;
+  --pink: #ffd6c0;
+  --cream: #fff8f0;
+  --charcoal: #1a1a1a;
+  --orange: #ff5c00;
+}
+
+.dark {
+  --background: #161210;
+  --foreground: #f7f1e8;
+  --card: #201a16;
+  --card-foreground: #f7f1e8;
+  --muted: #2a231d;
+  --muted-foreground: #b3a698;
+  --accent: #ff6a1a;
+  --accent-foreground: #1a1208;
+  --border: #2e2721;
+  --input: #2e2721;
+  --ring: #ff6a1a;
+  --pink: #ffd6c0;
+  --cream: #fff8f0;
+  --charcoal: #1a1a1a;
+  --orange: #ff6a1a;
+  --primary: #ff6a1a;
+  --primary-foreground: #1a1208;
+  --secondary: #3a2c22;
+  --destructive: #f87171;
+  --chart-1: #ff6a1a;
+  --chart-2: #ffd6c0;
+  --chart-3: #f7f1e8;
+  --chart-4: #ff8a3d;
+  --chart-5: #8a6a4f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-cream: var(--cream);
+  --color-charcoal: var(--charcoal);
+  --color-orange: var(--orange);
+  --color-pink: var(--pink);
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-display: "Playfair Display Variable", "Playfair Display", Georgia,
+    serif;
+
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-float-slow: float 6.5s ease-in-out infinite;
+  --animate-gradient: gradient-shift 8s ease infinite;
+  --animate-spin-slow: spin 14s linear infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-14px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(-7px) rotate(-1.5deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--accent) 60%, transparent)
+      transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+    /* hard guard against accidental horizontal pan on small screens
+       (clip keeps position: sticky/fixed working, unlike hidden) */
+    overflow-x: clip;
+    /* kill the 300ms double-tap-zoom delay on interactive elements */
+    touch-action: manipulation;
+  }
+
+  ::selection {
+    @apply bg-accent text-accent-foreground;
+  }
+}
+
+/* ── Custom utilities ──────────────────────────────────────── */
+
+/* Outlined display text (marquee etc.).
+   NOTE: -webkit-text-fill-color keeps the fill transparent while the
+   stroke resolves from the inherited text color — using `color:
+   transparent` would make currentColor (and thus the stroke) vanish. */
+@utility text-outline {
+  -webkit-text-stroke: 1.5px currentColor;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hide scrollbars while keeping scroll behaviour */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Glassmorphism card surface */
+@utility glass {
+  @apply border border-black/5 bg-white/60 backdrop-blur-md;
+}
+
+.dark .glass {
+  @apply border-white/10 bg-white/5;
+}
+
+/* Swiper pagination (testimonials) */
+.testimonials-swiper .swiper-pagination-bullet {
+  background: rgba(255, 248, 240, 0.4);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+.testimonials-swiper .swiper-pagination-bullet-active {
+  background: var(--orange);
+  width: 22px;
+  border-radius: 999px;
+}
+
+/* Respect reduced motion globally for CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Flavour hero — full-viewport flavour slider (Blendy-style inspo)
+   Everything inside a slide is drawn on a 1440×900 design frame
+   scaled by --u (set from JS). Fixed UI uses its own unit --n.
+   ─────────────────────────────────────────────────────────────────── */
+.al-stage {
+  --u: 0.8px;
+  --fy: 0px;
+  --fw: 1440;
+  --fh: 900;
+  --n: clamp(0.5px, min(100vw / 1440, 100vh / 900), 1.3px);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.al-slide {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: none;
+}
+.al-slide[data-state="current"] { display: block; z-index: 2; }
+.al-slide[data-state="under"]   { display: block; z-index: 1; }
+
+.al-frame {
+  position: absolute;
+  width: calc(var(--fw) * var(--u));
+  height: calc(var(--fh) * var(--u));
+  left: 50%;
+  top: calc(50% + var(--fy));
+  transform: translate(-50%, -50%);
+}
+
+.al-layer { position: absolute; inset: 0; will-change: transform; }
+
+.al-word {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: inherit;
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.al-shadow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(60, 40, 80, 0.22), transparent);
+  filter: blur(calc(4 * var(--u)));
+}
+
+.al-piece-wrap { position: absolute; }
+.al-piece {
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  --rot: 0deg;
+  animation: al-bob var(--dur, 4s) ease-in-out var(--del, 0s) infinite alternate;
+}
+@keyframes al-bob {
+  from { transform: translateY(calc(-7 * var(--u))) rotate(calc(var(--rot) - 3deg)); }
+  to   { transform: translateY(calc(7 * var(--u)))  rotate(calc(var(--rot) + 3deg)); }
+}
+.al-corner .al-piece { filter: blur(calc(9 * var(--u))); }
+
+/* Fixed UI (nav row, tabs, arrows, CTA) — pinned to viewport edges */
+.al-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.al-ui a,
+.al-ui button {
+  pointer-events: auto;
+  background: none;
+  border: 0;
+  color: inherit;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  cursor: pointer;
+}
+.al-textshadow { text-shadow: 0 1px 6px rgba(90, 70, 40, 0.18); }
+
+.al-head {
+  position: absolute;
+  left: calc(50 * var(--n));
+  right: calc(50 * var(--n));
+  top: calc(26 * var(--n));
+  height: calc(50 * var(--n));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.al-logo {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 800;
+  font-size: calc(51 * var(--n));
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.al-logo .dot { color: var(--orange); }
+.al-tabs {
+  position: absolute;
+  left: 50%;
+  top: calc(26 * var(--n));
+  height: calc(50 * var(--n) + 6 * var(--n));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: calc(88 * var(--n));
+  font-weight: 500;
+  font-size: calc(21 * var(--n));
+}
+.al-tab { padding: calc(6 * var(--n)) 0; opacity: 0.82; transition: opacity 0.3s; }
+.al-tab[aria-current="true"] { opacity: 1; }
+.al-underline {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform 0.6s cubic-bezier(0.65, 0, 0.35, 1),
+    width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.al-account {
+  display: flex;
+  align-items: center;
+  gap: calc(22 * var(--n));
+  font-weight: 500;
+  font-size: calc(21 * var(--n));
+}
+.al-account .sep { opacity: 0.9; }
+.al-theme-btn { display: grid; place-items: center; width: calc(30 * var(--n)); height: calc(30 * var(--n)); }
+
+.al-shop {
+  position: absolute;
+  left: 50%;
+  bottom: calc(36 * var(--n));
+  transform: translateX(-50%);
+  font-weight: 600;
+  font-size: calc(21 * var(--n));
+  letter-spacing: 0.2em;
+  padding: calc(10 * var(--n)) calc(16 * var(--n));
+}
+.al-arrow {
+  position: absolute;
+  bottom: calc(30 * var(--n));
+  width: calc(52 * var(--n));
+  height: calc(52 * var(--n));
+  display: grid;
+  place-items: center;
+}
+.al-arrow.prev { left: calc(36 * var(--n)); }
+.al-arrow.next { right: calc(36 * var(--n)); }
+.al-arrow svg { width: calc(28 * var(--n)); height: calc(28 * var(--n)); }
+
+/* Opening rise: UI elements rise in once fonts are ready (stage.is-in).
+   Uses the separate `translate` property so centring transforms stay put. */
+.al-rise {
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 1s cubic-bezier(0.22, 0.8, 0.3, 1), translate 1s cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+.al-stage.is-in .al-rise { opacity: 1; translate: 0 0; }
+.al-rise.d1 { transition-delay: 0.25s; }
+.al-rise.d2 { transition-delay: 0.33s; }
+.al-rise.d3 { transition-delay: 0.41s; }
+.al-rise.d4 { transition-delay: 0.49s; }
+.al-rise.d5 { transition-delay: 0.57s; }
+.al-rise.d6 { transition-delay: 0.65s; }
+
+/* Tablet / mobile: recompose on the compact 640×700 frame (fits fully) */
+@media (max-width: 820px), (orientation: portrait) {
+  .al-stage { --n: 1px; }
+  .al-head { left: 20px; right: 20px; top: 16px; height: 40px; }
+  .al-logo { font-size: 34px; }
+  .al-tabs {
+    top: 62px;
+    height: 30px;
+    gap: 22px;
+    font-size: 15px;
+  }
+  .al-account { gap: 10px; font-size: 15px; }
+  .al-theme-btn { width: 28px; height: 28px; }
+  .al-shop { font-size: 15px; bottom: 22px; }
+  .al-arrow { width: 48px; height: 48px; bottom: 12px; }
+  .al-arrow.prev { left: 8px; }
+  .al-arrow.next { right: 8px; }
+  .al-arrow svg { width: 24px; height: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .al-piece { animation: none !important; }
+}
+
