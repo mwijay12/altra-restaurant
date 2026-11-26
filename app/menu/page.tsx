@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MenuGrid } from "@/components/sections/menu-grid";
+import { MenuErrorBoundary } from "@/components/sections/menu-error-boundary";
 
 export const metadata: Metadata = {
   title: "Menu",
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function MenuPage() {
-  return <MenuGrid />;
+  return (
+    <MenuErrorBoundary>
+      <MenuGrid />
+    </MenuErrorBoundary>
+  );
 }
