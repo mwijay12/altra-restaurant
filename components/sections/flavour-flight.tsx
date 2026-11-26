@@ -119,14 +119,18 @@ export function FlavourFlight() {
       >
         <path d={trail} fill="none" stroke="#ff5c00" strokeWidth="2" strokeDasharray="3 11" strokeLinecap="round" opacity=".22" />
         <path ref={pathRef} d={trail} fill="none" stroke="#ff5c00" strokeWidth="2.2" strokeLinecap="round" opacity=".8" />
-        <g ref={shadowRef} aria-hidden="true" opacity=".16">
-          <ellipse cx="0" cy="20" rx="19" ry="7" fill="#211811" />
+        <g ref={shadowRef} aria-hidden="true" opacity=".13">
+          <g transform="scale(.38)">
+            <ellipse cx="0" cy="20" rx="19" ry="7" fill="#211811" />
+          </g>
         </g>
         <g ref={emberRef} aria-hidden="true">
-          <circle r="23" fill="#ff5c00" />
-          <circle r="18" fill="#f46b21" />
-          <path d="M1 13C-12 4-7-7 1-16c1 7 7 9 7 14 5-4 6-9 5-12 11 11 8 24-2 28-3 1-7 1-10-1Z" fill="#fff8f0" />
-          <path d="M1 10c-5-4-3-8 1-12 0 4 4 5 4 8 0 3-2 5-5 4Z" fill="#ff9b59" />
+          <g transform="scale(.38)">
+            <circle r="23" fill="#ff5c00" />
+            <circle r="18" fill="#f46b21" />
+            <path d="M1 13C-12 4-7-7 1-16c1 7 7 9 7 14 5-4 6-9 5-12 11 11 8 24-2 28-3 1-7 1-10-1Z" fill="#fff8f0" />
+            <path d="M1 10c-5-4-3-8 1-12 0 4 4 5 4 8 0 3-2 5-5 4Z" fill="#ff9b59" />
+          </g>
         </g>
       </svg>
       <svg
@@ -137,14 +141,18 @@ export function FlavourFlight() {
       >
         <path d={mobileTrail} fill="none" stroke="#ff5c00" strokeWidth="2" strokeDasharray="3 11" strokeLinecap="round" opacity=".22" />
         <path ref={mobilePathRef} d={mobileTrail} fill="none" stroke="#ff5c00" strokeWidth="2.2" strokeLinecap="round" opacity=".8" />
-        <g ref={mobileShadowRef} aria-hidden="true" opacity=".15">
-          <ellipse cx="0" cy="11" rx="10" ry="4" fill="#211811" />
+        <g ref={mobileShadowRef} aria-hidden="true" opacity=".12">
+          <g transform="scale(.72)">
+            <ellipse cx="0" cy="11" rx="10" ry="4" fill="#211811" />
+          </g>
         </g>
         <g ref={mobileEmberRef} aria-hidden="true">
-          <circle r="12" fill="#ff5c00" />
-          <circle r="9.2" fill="#f46b21" />
-          <path d="M.5 7C-6.3 2-3.8-4 .5-8c.5 3.5 3.5 4.5 3.5 7 2.5-2 3-4.5 2.5-6 5.5 5.5 4 12-1 14-1.5.5-3.5.5-5 0Z" fill="#fff8f0" />
-          <path d="M.5 5c-2.5-2-1.5-4 0-6 0 2 2 2.5 2 4s-1 2.5-2 2Z" fill="#ff9b59" />
+          <g transform="scale(.72)">
+            <circle r="12" fill="#ff5c00" />
+            <circle r="9.2" fill="#f46b21" />
+            <path d="M.5 7C-6.3 2-3.8-4 .5-8c.5 3.5 3.5 4.5 3.5 7 2.5-2 3-4.5 2.5-6 5.5 5.5 4 12-1 14-1.5.5-3.5.5-5 0Z" fill="#fff8f0" />
+            <path d="M.5 5c-2.5-2-1.5-4 0-6 0 2 2 2.5 2 4s-1 2.5-2 2Z" fill="#ff9b59" />
+          </g>
         </g>
       </svg>
 
