@@ -8,6 +8,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ArrowRight, Mail, Flame, Lock, Eye, EyeOff, ArrowLeft, X, AlertCircle, PartyPopper, Loader } from "lucide-react";
 // Importing animation components from framer-motion
 import { AnimatePresence, motion, useInView, Variants, Transition } from "framer-motion";
+import { TransitionLink } from "@/components/layout/transition-link";
 
 // --- CONFETTI LOGIC ---
 import type { ReactNode } from "react"
@@ -168,9 +169,11 @@ interface AuthComponentProps {
   onAuthSuccess?: (email: string) => void;
   /** Called when the Google button is pressed (demo Google sign-in). */
   onGoogleLogin?: () => void;
+  /** Where visitors can return after opening the standalone admin sign-in. */
+  backHref?: string;
 }
 
-export const AuthComponent = ({ logo = <DefaultLogo />, brandName = "Altra", onAuthSuccess, onGoogleLogin }: AuthComponentProps) => {
+export const AuthComponent = ({ logo = <DefaultLogo />, brandName = "Altra", onAuthSuccess, onGoogleLogin, backHref = "/" }: AuthComponentProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -322,6 +325,15 @@ useEffect(() => {
 
         <Confetti ref={confettiRef} manualstart className="fixed top-0 left-0 w-full h-full pointer-events-none z-[999]" />
         <Modal />
+
+        <TransitionLink
+          href={backHref}
+          ariaLabel="Back to the main Altra site"
+          className="fixed right-4 top-4 z-30 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/70 bg-white/35 px-3 text-xs font-semibold text-foreground/80 shadow-sm backdrop-blur-xl transition-colors hover:bg-white/65 hover:text-foreground sm:right-6 sm:top-5 sm:px-4 sm:text-sm"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          <span>Back to main site</span>
+        </TransitionLink>
 
         <div className={cn( "fixed top-4 left-4 z-20 flex items-center gap-2", "md:left-1/2 md:-translate-x-1/2" )}>
             {logo}

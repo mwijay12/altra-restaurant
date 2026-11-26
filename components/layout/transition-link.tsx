@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { usePageTransition } from "./transition-context";
 
@@ -15,11 +15,13 @@ export interface TransitionLinkProps {
 /**
  * <a>-based link that plays the orange curtain wipe before an internal
  * navigation. External URLs and modifier-clicks fall through to default
- * browser behaviour. Renders a plain <a> so Next.js prefetch still applies.
+ * browser behaviour. Internal routes are prefetched on intent to keep the
+ * short SVG wipe from waiting on a cold route.
  */
 export function TransitionLink({ href, children, className, onClick, ariaLabel }: TransitionLinkProps) {
   const { navigate } = usePageTransition();
   const pathname = usePathname();
+  const router = useRouter();
   const isInternal = href.startsWith("/") && !href.startsWith("//");
 
   if (!isInternal) {
@@ -29,6 +31,8 @@ export function TransitionLink({ href, children, className, onClick, ariaLabel }
       </a>
     );
   }
+
+  const prefetchPage = () => router.prefetch(href);
 
   const handleClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     onClick?.(event);
@@ -41,7 +45,15 @@ export function TransitionLink({ href, children, className, onClick, ariaLabel }
   };
 
   return (
-    <a href={href} className={className} aria-label={ariaLabel} onClick={handleClick}>
+    <a
+      href={href}
+      className={className}
+      aria-label={ariaLabel}
+      onClick={handleClick}
+      onPointerEnter={prefetchPage}
+      onPointerDown={prefetchPage}
+      onFocus={prefetchPage}
+    >
       {children}
     </a>
   );

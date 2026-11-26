@@ -40,6 +40,7 @@ const stories = [
 ] as const;
 
 const trail = "M 875 72 C 875 145 205 125 170 258 S 145 390 840 432 S 905 615 180 652 S 125 815 820 848 S 900 1012 165 1050";
+const mobileTrail = "M 26 0 C 14 120 38 180 25 290 S 16 470 25 580 S 40 790 24 920 S 13 1120 25 1260 S 40 1450 24 1590 S 15 1800 26 2100";
 
 /** Scroll-led editorial food story, with a small Altra ember tracing the story path. */
 export function FlavourFlight() {
@@ -47,48 +48,47 @@ export function FlavourFlight() {
   const pathRef = useRef<SVGPathElement>(null);
   const emberRef = useRef<SVGGElement>(null);
   const shadowRef = useRef<SVGGElement>(null);
+  const mobilePathRef = useRef<SVGPathElement>(null);
+  const mobileEmberRef = useRef<SVGGElement>(null);
+  const mobileShadowRef = useRef<SVGGElement>(null);
 
   useGSAP(() => {
     const section = sectionRef.current;
-    const path = pathRef.current;
-    const ember = emberRef.current;
-    const shadow = shadowRef.current;
-    if (!section || !path || !ember || !shadow) return;
+    if (!section) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // The tiny brand ember follows the same editorial route as the food cards.
-    // Keep it scrubbed to scroll (rather than autoplaying) and decorative only.
-    gsap.to([ember, shadow], {
-      motionPath: {
-        path,
-        align: path,
-        alignOrigin: [0.5, 0.5],
-        autoRotate: false,
-      },
-      ease: "none",
-      scrollTrigger: {
-        trigger: section,
-        start: "top 78%",
-        end: "bottom 42%",
-        scrub: 1.1,
-        invalidateOnRefresh: true,
-      },
-    });
-
-    gsap.fromTo(
-      path,
-      { drawSVG: "0%" },
-      {
+    const animateTrail = (path: SVGPathElement | null, ember: SVGGElement | null, shadow: SVGGElement | null) => {
+      if (!path || !ember || !shadow) return;
+      gsap.to([ember, shadow], {
+        motionPath: { path, align: path, alignOrigin: [0.5, 0.5], autoRotate: false },
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 78%",
+          end: "bottom 42%",
+          scrub: 0.8,
+          invalidateOnRefresh: true,
+        },
+      });
+      gsap.fromTo(path, { drawSVG: "0%" }, {
         drawSVG: "100%",
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top 75%",
           end: "bottom 45%",
-          scrub: 1.1,
+          scrub: 0.8,
+          invalidateOnRefresh: true,
         },
-      },
-    );
+      });
+    };
+
+    // Desktop keeps the sweeping side-to-side flight. On phones, a slim
+    // vertical rail and smaller ember follow the stacked cards without
+    // stretching the desktop route across the tall viewport.
+    const media = gsap.matchMedia();
+    media.add("(min-width: 768px)", () => animateTrail(pathRef.current, emberRef.current, shadowRef.current));
+    media.add("(max-width: 767px)", () => animateTrail(mobilePathRef.current, mobileEmberRef.current, mobileShadowRef.current));
 
     const cards = Array.from(section.querySelectorAll<HTMLElement>("[data-flavour-card]"));
     cards.forEach((card, index) => {
@@ -105,6 +105,7 @@ export function FlavourFlight() {
         },
       });
     });
+    return () => media.revert();
   }, { scope: sectionRef });
 
   return (
@@ -114,7 +115,7 @@ export function FlavourFlight() {
         aria-hidden="true"
         viewBox="0 0 1000 1120"
         preserveAspectRatio="none"
-        className="pointer-events-none absolute inset-0 -z-0 h-full w-full overflow-visible opacity-55"
+        className="pointer-events-none absolute inset-0 -z-0 hidden h-full w-full overflow-visible opacity-55 md:block"
       >
         <path d={trail} fill="none" stroke="#ff5c00" strokeWidth="2" strokeDasharray="3 11" strokeLinecap="round" opacity=".22" />
         <path ref={pathRef} d={trail} fill="none" stroke="#ff5c00" strokeWidth="2.2" strokeLinecap="round" opacity=".8" />
@@ -126,6 +127,24 @@ export function FlavourFlight() {
           <circle r="18" fill="#f46b21" />
           <path d="M1 13C-12 4-7-7 1-16c1 7 7 9 7 14 5-4 6-9 5-12 11 11 8 24-2 28-3 1-7 1-10-1Z" fill="#fff8f0" />
           <path d="M1 10c-5-4-3-8 1-12 0 4 4 5 4 8 0 3-2 5-5 4Z" fill="#ff9b59" />
+        </g>
+      </svg>
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 430 2100"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-0 -z-0 h-full w-full overflow-visible opacity-65 md:hidden"
+      >
+        <path d={mobileTrail} fill="none" stroke="#ff5c00" strokeWidth="2" strokeDasharray="3 11" strokeLinecap="round" opacity=".22" />
+        <path ref={mobilePathRef} d={mobileTrail} fill="none" stroke="#ff5c00" strokeWidth="2.2" strokeLinecap="round" opacity=".8" />
+        <g ref={mobileShadowRef} aria-hidden="true" opacity=".15">
+          <ellipse cx="0" cy="11" rx="10" ry="4" fill="#211811" />
+        </g>
+        <g ref={mobileEmberRef} aria-hidden="true">
+          <circle r="12" fill="#ff5c00" />
+          <circle r="9.2" fill="#f46b21" />
+          <path d="M.5 7C-6.3 2-3.8-4 .5-8c.5 3.5 3.5 4.5 3.5 7 2.5-2 3-4.5 2.5-6 5.5 5.5 4 12-1 14-1.5.5-3.5.5-5 0Z" fill="#fff8f0" />
+          <path d="M.5 5c-2.5-2-1.5-4 0-6 0 2 2 2.5 2 4s-1 2.5-2 2Z" fill="#ff9b59" />
         </g>
       </svg>
 
@@ -150,7 +169,7 @@ export function FlavourFlight() {
               <article
                 key={story.id}
                 data-flavour-card
-                className={`group w-full max-w-[34rem] ${alignRight ? "md:ml-auto md:mr-[4%]" : "md:ml-[4%]"}`}
+                className={`group w-full max-w-[34rem] pl-10 md:pl-0 ${alignRight ? "md:ml-auto md:mr-[4%]" : "md:ml-[4%]"}`}
               >
                 <div className="relative aspect-[1.22] overflow-hidden rounded-[1.75rem] bg-[#ead9c8] shadow-[0_22px_70px_rgba(76,47,28,0.12)] sm:rounded-[2.25rem]">
                   <Image
